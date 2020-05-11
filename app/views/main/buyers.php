@@ -4,25 +4,16 @@ use app\models\Main;
 $main = new Main;
 use app\lib\DB;
 ?>
-<style>
-	.tr-hover-effect tr:hover {
-		background-color: #c9e8ff !important;
-		transition: all 0.2s ease-in-out 0s;
-	}
-	.tr-hover-effect tr td {
-		border-bottom:1px solid #e9e9ec !important;
-	}
-</style>
 <div class="container">
 	<div class="row">
 		<div class="col-md-12">
 			<div class="box">
 				<div class="table-responsive">
-					<table class="table table-hover">
+					<table class="table table-hover" id="table-data-buyers">
 						<thead>
 							<tr>
 							<?php if(Config::get('ICONS') == 1):?>
-								<th class="text-center border-0 d-flex justify-content-center"><i class="fa fa-info" aria-hidden="true"></i></th>
+								<th class="nosort text-center border-0 d-flex justify-content-center"><i class="fa fa-info"></i></th>
 							<?php endif;?>
 								<th class="border-0">Ник игрока</th>
 							<?php if( $main->getCountServers() > 1 ):?>
@@ -31,7 +22,7 @@ use app\lib\DB;
 								<th class="border-0">Привилегия</th>
 								<th class="border-0">Начало</th>
 								<th class="border-0">Окончание</th>
-								<th class="border-0"><i class="fa fa-vk" aria-hidden="true"></i></th>
+								<th class="nosort border-0"><i class="fa fa-vk"></i></th>
 							</tr>
 						</thead>
 						<tbody class="tr-hover-effect">
@@ -39,7 +30,7 @@ use app\lib\DB;
 							foreach ($buyers as $row):
 								$expired = ($row['expired'] == 0) ? 'Никогда' : date('d.m.Y', $row['expired']);
 								$tarif = ($row['tarif_id'] == null || $row['tarif_id'] == 0) ? 'Unknown' : $main->getPrivilegeNameById($row['tarif_id']);
-								$bgred = ($row['expired'] < time() && $row['expired'] != 0) ? 'style="background-color: #ffebcf"' : '';
+								$bgred = ($row['expired'] < time() && $row['expired'] != 0) ? 'style="background-color: #fff9eb"' : '';
 								$vk = ($row['vk'] != null) ? '<span class="text-info"><a href="https://'.htmlspecialchars($row['vk']).'" target="_blank"><i class="fa fa-vk"></i></a></span>' : '<span class="text-secondary"><i class="fa fa-vk"></i></span>';
 						?>
 							<tr <?=$bgred?>>
@@ -205,3 +196,35 @@ use app\lib\DB;
 		</div>
 	</div>
 </div>
+<script>
+$(document).ready(function() 
+{
+	$('#table-data-buyers').DataTable({
+		columnDefs: [{
+			targets: 'nosort',
+			orderable: false
+		}],
+		"aaSorting": [],
+		"processing": true,
+		'language' : {
+			"lengthMenu":		"Показать _MENU_ записей",
+			"emptyTable":		"Данные отсутствуют в таблице",
+			"info":				"Показано с _START_ по _END_ из _TOTAL_ записей",
+			"infoFiltered":		"(фильтрация из _MAX_ записей)",
+			"infoEmpty":		"Нет записей",
+			"loadingRecords": 	"Loading...",
+			"processing":		"Processing...",
+			"search":			"Поиск",
+			"zeroRecords":		"Не найдено подходящих записей",
+			"paginate": {
+				"first":		"Первая",
+				"last":			"Последняя",
+				"next":			"Следующая",
+				"previous":		"Предыдущая"
+			},
+		},
+	});
+
+	$('.pagination').addClass('pagination-sm');
+});
+</script>

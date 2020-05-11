@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-md nav-bg navbar-dark fixed-top box p-2 rounded-0" style="box-shadow: none;">
+<nav class="navbar navbar-expand-lg nav-bg navbar-dark fixed-top box p-2 rounded-0" style="box-shadow: none;">
 	<a class="navbar-brand ml-5 mr-5" href="<?=$this->SITE_URL?>"><?=$this->SITE_NAME?></a>
 	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 	<span class="navbar-toggler-icon"></span>
@@ -11,6 +11,9 @@
 			</li>
 			<li class="nav-item">
 				<a class="n-link" href="<?=$this->SITE_URL?>buyers"><i class="fa fa-user-o"></i> Покупатели</a>
+			</li>
+			<li class="nav-item">
+				<a class="n-link" href="<?=$this->SITE_URL?>bans"><i class="fa fa-wheelchair"></i> Банлист</a>
 			</li>
 			<li class="nav-item">
 				<a class="n-link" href="<?=$this->SITE_URL?>account/login"><i class="fa fa-home"></i> Личный кабинет</a>

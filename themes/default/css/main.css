@@ -151,6 +151,15 @@ a:hover {
 }
 
 /*buttons*/
+.ban-buttons {
+	position: absolute;
+	top: 15px;
+	right: 15px;
+}
+.admin-buttons {
+	margin-top: 0.5rem;
+}
+
 button:focus {
 	outline: none !important;
 }
@@ -329,6 +338,24 @@ button:focus {
 	opacity: 1 !important;
 }
 
+/*tables*/
+.tr-hover-effect tr:hover {
+	background-color: #c9e8ff !important;
+	transition: all 0.2s ease-in-out 0s;
+}
+.tr-hover-effect tr td {
+	/*border-bottom:1px solid #e9e9ec !important;*/
+	border-bottom: 0;
+}
+
+/*datatables*/
+.sorting::before {
+	opacity: 0.8 !important;
+}
+.sorting::after {
+	opacity: 0.8 !important;
+}
+
 /* messages*/
 #mess {
 	/*position: fixed;
@@ -414,11 +441,54 @@ button:focus {
 	margin-left: 0;
 }
 
+/*bootstrap classes*/
+.dropdown-menu {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	z-index: 1000;
+	display: none;
+	float: left;
+	min-width: 10rem;
+	padding: 0.5rem 0;
+	margin: 0.125rem 0 0;
+	font-size: 1rem;
+	color: #212529;
+	text-align: left;
+	list-style: none;
+	background-color: #f2f2f3;
+	background-clip: padding-box;
+	border: 1px solid rgba(0, 0, 0, 0.15);
+	border-radius: 2px;
+}
+.custom-select:focus {
+	border-color: #5dbaff;
+	outline: 0;
+	box-shadow: none;
+}
+
 
 /* responsive */
+@media (max-width: 990px) {
+	.ban-col-two {
+		border-top: 1px solid #b3b3b3;
+	}
+}
 @media (max-width: 768px) {
 	#fk-banner {
 		display: none;
+	}
+	.ban-buttons {
+		position: initial;
+		display: flex;
+		justify-content: center;
+	}
+	.admin-buttons {
+		margin-top: 0;
+		margin-left: 10px;
+	}
+	.navbar-brand {
+		padding-left: 50px;
 	}
 }
 @media (max-width: 550px) {
@@ -453,8 +523,6 @@ button:focus {
 		display: block;
 	}
 	#checkPromoCode {
-		display: flex;
-		justify-content: center;
 		margin-top: 10px;
 	}
 }

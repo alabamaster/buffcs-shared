@@ -115,7 +115,7 @@ class Main extends Model
 		$sql = DB::run('SELECT * FROM `'.$this->DB['prefix'].'_amxadmins` `t1` JOIN `'.$this->DB['prefix'].'_admins_servers` `t2` WHERE `t1`.`id` = ? AND `t1`.`id` = `t2`.`admin_id` LIMIT 1', 
 			[$post['user_id']])->fetch(PDO::FETCH_ASSOC);
 
-		$username = ($post['type'] == 'a') ? htmlspecialchars($post['nickname']) : htmlspecialchars($post['steamid']);
+		$username = ($post['type'] == 'a') ? $post['nickname'] : $post['steamid'];
 
 		if ( !$sql ) {
 			$this->errro = 'Ошибка получения ID игрока';
@@ -146,7 +146,7 @@ class Main extends Model
 						return false;
 					}
 					DB::run('UPDATE `'.$this->DB['prefix'].'_amxadmins` SET `username` = ?, `steamid` = ?, `nickname` = ? WHERE `id` = ?', 
-						[ $username, $username, htmlspecialchars($post['nickname']), $post['user_id'] ]);
+						[ $username, $username, $username, $post['user_id'] ]);
 				}
 			break;
 		}
@@ -156,7 +156,7 @@ class Main extends Model
 			if ( $this->emailExist($post['email']) ) {
 				return false;
 			}
-			DB::run('UPDATE `'.$this->DB['prefix'].'_admins_servers` SET `email` = ? WHERE `admin_id` = ?', [ htmlspecialchars($post['email']), $post['user_id'] ]);
+			DB::run('UPDATE `'.$this->DB['prefix'].'_admins_servers` SET `email` = ? WHERE `admin_id` = ?', [ $post['email'], $post['user_id'] ]);
 		}
 
 		// check vk
@@ -164,12 +164,12 @@ class Main extends Model
 			if ( $this->vkExist($post['vk']) ) {
 				return false;
 			}
-			DB::run('UPDATE `'.$this->DB['prefix'].'_admins_servers` SET `vk` = ? WHERE `admin_id` = ?', [ htmlspecialchars($post['vk']), $post['user_id'] ]);
+			DB::run('UPDATE `'.$this->DB['prefix'].'_admins_servers` SET `vk` = ? WHERE `admin_id` = ?', [ $post['vk'], $post['user_id'] ]);
 		}
 
 		// check type access
 		if ( $post['type'] != $sql['flags'] ) {
-			DB::run('UPDATE `'.$this->DB['prefix'].'_amxadmins` SET `flags` = ? WHERE `id` = ?', [ htmlspecialchars($post['type']), $post['user_id'] ]);
+			DB::run('UPDATE `'.$this->DB['prefix'].'_amxadmins` SET `flags` = ? WHERE `id` = ?', [ $post['type'], $post['user_id'] ]);
 		}
 
 		// check server
@@ -264,8 +264,6 @@ class Main extends Model
 
 	public function emailExist($email)
 	{
-		$email = trim(htmlspecialchars($email));
-
 		if ( mb_strlen($email) < 3 || mb_strlen($email) > 30 ) {
 			$this->error = 'Email должен быть от 3 до 30 символов!';
 			return true;
@@ -286,8 +284,8 @@ class Main extends Model
 			$this->error = 'Выберите сервер';
 			return true;
 		}
-		$username = ($post['type'] == 'a') ? $username = trim($post['nickname']) : $username = trim($post['steamid']);
-		// $username = ($post['type'] == 'a')? $username = $post['nickname'] : $username = $post['steamid'];
+
+		$username = ($post['type'] == 'a') ? $post['nickname'] : $username = $post['steamid'];
 
 		if ( mb_strlen($username) < 3 || mb_strlen($username) > 30 ) {
 			$this->error = 'Ник или SteamID должен быть от 3 до 30 символов! (кириллица от 3 до 15)';

@@ -51,6 +51,10 @@ class MerchantController extends Controller
 			case '3': // продление авторизованного юзера
 				$this->FK->checkAuthPay($_POST);
 			break;
+
+			case 'unban':
+				$this->FK->unBan($_POST);
+			break;
 		}
 	}
 

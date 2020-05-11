@@ -21,6 +21,17 @@
 		<link rel="stylesheet" href="<?=$this->SITE_URL?>themes/<?=$this->SITE_STYLE?>/css/main.css">
 		<link rel="icon" type="image/png" sizes="16x16" href="<?=$this->SITE_URL?>favicon-16x16.png">
 
+		<!-- jquery -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+		
+		<?php if(
+			$this->route['controller'] == 'bans' && $this->route['action'] == 'index' || 
+			$this->route['controller'] == 'main' && $this->route['action'] == 'buyers'
+		):?>
+			<link rel="stylesheet" type="text/css" href="<?=$this->SITE_URL?>themes/DataTables/datatables.min.css"/>
+			<script type="text/javascript" src="<?=$this->SITE_URL?>themes/DataTables/datatables.min.js"></script>
+		<?php endif;?>
+
 		<title><?php echo $title; ?></title>
 	</head>
 	<body>
@@ -29,12 +40,9 @@
 
 		<footer class="footer"></footer>
 		<div id="mess"></div>
-		<!-- Optional JavaScript -->
+
 		<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-		<!-- <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script> -->
 		<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-		<!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script> -->
 		<script src="<?=$this->SITE_URL?>themes/<?=$this->SITE_STYLE?>/js/bootstrap.min.js"></script>
 	
 		<?php if( $this->route['controller'] == 'admin' ):?>

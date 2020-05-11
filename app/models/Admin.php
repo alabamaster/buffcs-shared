@@ -128,15 +128,6 @@ class Admin extends Model
 		$username 	= ($post['type'] == 'a') ? $post['nickname'] : $post['steamid'];
 		$steamid 	= ($post['type'] == 'a') ? $post['nickname'] : $post['steamid'];
 		$nickname 	= ($post['type'] == 'a') ? $post['nickname'] : $post['steamid'];
-
-		if( 
-			empty($nickname) || empty($post['password']) || empty($post['email']) ||
-			empty($post['server']) || empty($post['access']) || empty($post['days']) ||
-			empty($post['show']) || empty($post['privilege'])
-		) {
-			$this->error = 'Заполните все поля с красной звёздочкой';
-			return false;
-		}
 		
 		$days 	= (int)$post['days'];
 		$icq 	= ( empty($post['icq']) || mb_strlen($post['icq']) == 0 ) ? $icq = NULL : $icq = $post['icq'];

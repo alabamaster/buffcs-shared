@@ -1,7 +1,7 @@
 <?php 
 return [
 	# настройка сайта
-	'SITEURL' 		=> 'https://buffcs.gq/', // урл сайта
+	'SITEURL' 		=> 'http://buffcs-branch-bans.loc/', // урл сайта
 	'STYLE' 		=> 'default', // стиль сайта ['default']
 	'NAME' 			=> 'BUFFCS', // название сайта
 	'RULES_URL' 	=> '#', // ссылка на правила
@@ -9,6 +9,15 @@ return [
 	'RELOADADMINS' 	=> 1, // отправлять amx_reloadadmins после покупки привилегии (в БД amx_serverinfo должен быть rcon)
 	'VK_GROUP'		=> 'https://vk.com/alabamasster1337', // полная ссылка на группу вк
 	'WEB_SERVER_IP'	=> '127.0.0.1', // ip вашего web сервера для отправки cron-a
+	'GEO_IP'		=> 1, // какой модуль geo ip юзать // 0- geoip php, 1 - other api 
+	
+	# настройки банлиста
+	'BANS' => [
+		'charset'	=> 'latin1', // latin1 или utf8
+		'price'		=> 228, // цена разбана
+		'hide_ip'	=> 0, // скрыть ip // 0/1
+		'hide_id'	=> 0, // скрыть steamid // 0/1
+	],
 	
 	# настройка smtp (отправка почты)
 	# yandex https://yandex.ru/support/mail/mail-clients.html

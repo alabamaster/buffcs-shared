@@ -127,4 +127,14 @@ return [
 		'controller'=> 'merchant',
 		'action' => 'yandexmoney',
 	],
+
+	// BansController
+	'bans{page:.*\/|\z|\/\d+}' => [ // {page:.*} // {page:\/\d+}
+		'controller' => 'bans',
+		'action' => 'index',
+	],
+	'bans/ban{id:\w+}' => [
+		'controller' => 'bans',
+		'action' => 'ban',
+	],
 ];
