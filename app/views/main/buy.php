@@ -5,7 +5,7 @@
 				<form action="<?=$this->SITE_URL?>buy" class="p-2" autocomplete="off" method="POST">
 
 					<!-- type and email  -->
-					<div class="row">
+					<div id="row-to-block" class="row">
 						<div class="col">
 							<div class="form-group">
 								<label><i class="fa fa-key"></i> Тип</label>
@@ -24,7 +24,7 @@
 					</div>
 
 					<!-- username and password -->
-					<div class="row">
+					<div id="row-to-block" class="row">
 						<div class="col">
 							<div class="form-group">
 								<div id="label" class="d-inline-block" style="margin-bottom: 0.5rem;">
@@ -42,7 +42,7 @@
 					</div>
 
 					<!-- server and privileges  -->
-					<div class="row">
+					<div id="row-to-block" class="row">
 						<div class="col">
 							<div class="form-group">
 								<label><i class="fa fa-server"></i> Сервер</label>
@@ -65,7 +65,7 @@
 					</div>
 
 					<!-- time and shop  -->
-					<div class="row">
+					<div id="row-to-block" class="row">
 						<div class="col">
 							<div class="form-group">
 								<label><i class="fa fa-clock-o"></i> Срок</label>
@@ -93,10 +93,12 @@
 					<?php if(!isset($_SESSION['authorization'])):?>
 					<!-- promocode  -->
 					<div class="row align-items-center">
-						<div class="col-lg-8">
+						<div class="col-sm-8">
 							<input name="promoCode" id="code" type="text" class="form-control form-control-sm" placeholder="Промокод">
 						</div>
-						<div class="col-lg-4"><button id="checkPromoCode" type="button" class="fc-button fc-button-green">Проверить</button></div>
+						<div class="col-sm-4">
+							<button id="checkPromoCode" type="button" class="fc-button fc-button-green">Проверить</button>
+						</div>
 					</div>
 					
 					<!-- checkbox rules -->

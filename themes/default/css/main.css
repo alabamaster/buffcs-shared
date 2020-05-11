@@ -446,3 +446,15 @@ button:focus {
 		flex-direction: column;
 	}
 }
+
+/* flex to blokc and check promocode button in main/buy page */
+@media (max-width: 450px) {
+	#row-to-block {
+		display: block;
+	}
+	#checkPromoCode {
+		display: flex;
+		justify-content: center;
+		margin-top: 10px;
+	}
+}
