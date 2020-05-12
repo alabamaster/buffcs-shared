@@ -1,7 +1,6 @@
 <?php 
 namespace app\controllers;
 
-// базовый контроллер подключается для всех контроллеров
 use app\core\Controller;
 use app\core\Config;
 use app\core\View;

@@ -14,7 +14,7 @@ return [
 	# настройки банлиста
 	'BANS' => [
 		'charset'	=> 'latin1', // latin1 или utf8
-		'price'		=> 228, // цена разбана
+		'price'		=> 228, // цена разбана (покупка разбана работает только с freekassa и robokassa)
 		'hide_ip'	=> 0, // скрыть ip // 0/1
 		'hide_id'	=> 0, // скрыть steamid // 0/1
 	],

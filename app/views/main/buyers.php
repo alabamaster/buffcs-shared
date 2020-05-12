@@ -15,13 +15,13 @@ use app\lib\DB;
 							<?php if(Config::get('ICONS') == 1):?>
 								<th class="nosort text-center border-0 d-flex justify-content-center"><i class="fa fa-info"></i></th>
 							<?php endif;?>
-								<th class="border-0">Ник игрока</th>
+								<th class="nosort border-0">Ник игрока</th>
 							<?php if( $main->getCountServers() > 1 ):?>
 								<th class="border-0">Сервер</th>
 							<?php endif;?>
 								<th class="border-0">Привилегия</th>
-								<th class="border-0">Начало</th>
-								<th class="border-0">Окончание</th>
+								<th class="nosort border-0">Начало</th>
+								<th class="nosort border-0">Окончание</th>
 								<th class="nosort border-0"><i class="fa fa-vk"></i></th>
 							</tr>
 						</thead>
@@ -98,6 +98,20 @@ use app\lib\DB;
 														<div class="row mb-1 border-bottom pb-2 pt-3 align-items-center">
 															<div class="col-3">#ID</div>
 															<div class="col-9"><?=$row['id']?></div>
+														</div>
+														<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
+															<div class="col-3">Показывть</div>
+															<div class="col-9">
+																<select name="show" class="form-control form-control-sm">
+																	<?php if($row['ashow'] == 1):?>
+																		<option value="0">Скрыть</option>
+																		<option value="1" selected="">Показывать</option>
+																	<?php else:?>
+																		<option value="0" selected="">Скрыть</option>
+																		<option value="1">Показывать</option>
+																	<?php endif;?>
+																</select>
+															</div>
 														</div>
 														<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
 															<div class="col-3">Ник</div>
@@ -224,7 +238,5 @@ $(document).ready(function()
 			},
 		},
 	});
-
-	$('.pagination').addClass('pagination-sm');
 });
 </script>

@@ -1,7 +1,6 @@
 <?php 
 namespace app\controllers;
 
-// базовый контроллер подключается для всех контроллеров
 use app\core\Controller;
 use app\core\Config;
 use app\core\View;
@@ -74,6 +73,10 @@ class MerchantController extends Controller
 
 			case '3': // продление авторизованного юзера
 				$this->RK->checkAuthPay($_POST);
+			break;
+
+			case 'unban':
+				$this->FK->unBan($_POST);
 			break;
 		}
 	}

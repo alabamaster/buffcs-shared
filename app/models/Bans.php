@@ -43,7 +43,7 @@ class Bans extends Model
 				return $result = ($bool == true) ? true : '<span style="color: #00ad17;">' . $length . ' мин.</span>';
 			} else {
 				// return $row['ban_length'] . ' мин.';
-				return $result = ($bool == true) ? false : $row['ban_length'] . ' мин.';
+				return $result = ($bool == true) ? false : $length . ' мин.';
 			}
 	}
 

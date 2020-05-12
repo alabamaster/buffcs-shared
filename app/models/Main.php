@@ -73,7 +73,7 @@ class Main extends Model
 	// нужно передавать сервер Id и по нему уже выдавать
 	public function getBuyers()
 	{
-		$sql = DB::run('SELECT * FROM `'.$this->DB['prefix'].'_amxadmins` `t1` JOIN `'.$this->DB['prefix'].'_admins_servers` `t2` WHERE `t1`.`id` = `t2`.`admin_id` ORDER BY `created` DESC')->fetchAll();
+		$sql = DB::run('SELECT * FROM `'.$this->DB['prefix'].'_amxadmins` `t1` JOIN `'.$this->DB['prefix'].'_admins_servers` `t2` WHERE `t1`.`id` = `t2`.`admin_id` AND (`t1`.`tarif_id` != "" OR `t1`.`tarif_id` != 0 OR `t1`.`tarif_id` != NULL) ORDER BY `created` DESC')->fetchAll();
 		return $sql;
 	}
 
@@ -149,6 +149,11 @@ class Main extends Model
 						[ $username, $username, $username, $post['user_id'] ]);
 				}
 			break;
+		}
+
+		// check ashow
+		if ( $post['show'] != $sql['ashow'] ) {
+			DB::run('UPDATE `'.$this->DB['prefix'].'_amxadmins` SET `ashow` = ? WHERE `id` = ?', [ $post['show'], $post['user_id'] ]);
 		}
 
 		// check email

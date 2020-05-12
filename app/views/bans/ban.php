@@ -10,16 +10,19 @@
 				<div class="ban-buttons">
 					<!-- button buy unban -->
 					<?php if ( !$model->bansExpiredCalc($data['ban_created'], $data['expired'], $data['ban_length'], true) ):?>
-					<div class="dropdown">
+					<div class="dropdown" data-toggle="tooltip" data-placement="top" title="Бан будет снят в течении 15ти минут">
 						<button class="fc-button fc-button-green dropdown-toggle" type="button" id="buyUnban" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-							<i class="fa fa-usd" aria-hidden="true"></i> Купить разбан
+							<i class="fa fa-usd" aria-hidden="true"></i> Купить разбан (<?php echo $ban_price .' '. $currency;?>)
 						</button>
 						<div class="dropdown-menu" aria-labelledby="buyUnban" style="background-color: ##F2F2F3 !important">
 							<div class="text-center">Способы оплаты</div>
 							<div class="dropdown-divider"></div>
-							<button class="dropdown-item" id="freekassa" onclick="goPayUnban(this.id)">Freekassa</button>
-							<button class="dropdown-item" id="robokassa" onclick="goPayUnban(this.id)">Robokassa</button>
-							<button class="dropdown-item" id="unitpay" onclick="goPayUnban(this.id)">UnitPay</button>
+							<?php if($fk_active == 1):?>
+								<button class="dropdown-item" id="freekassa" onclick="goPayUnban(this.id)">Freekassa</button>
+							<?php endif;?>
+							<?php if($rk_active == 1):?>
+								<button class="dropdown-item" id="robokassa" onclick="goPayUnban(this.id)">Robokassa</button>
+							<?php endif;?>
 						</div>
 					</div>
 					<?php endif;?>
@@ -50,8 +53,8 @@
 					</div>
 					<div class="col-lg-6 ban-col-two">
 						<ul class="list-group list-group-flush">
-							<li class="list-group-item">IP <b><?php echo $ip = ($cfg['hide_ip'] == 1) ? '***' : $data['player_ip']?></b></li>
-							<li class="list-group-item">SteamID <b><?php echo $steam = ($cfg['hide_id'] == 1) ? '***' : $data['player_id']?></b></li>
+							<li class="list-group-item">IP <b><?php echo $ip = ($ban_cfg['hide_ip'] == 1) ? '***' : $data['player_ip']?></b></li>
+							<li class="list-group-item">SteamID <b><?php echo $steam = ($ban_cfg['hide_id'] == 1) ? '***' : $data['player_id']?></b></li>
 							<li class="list-group-item">Киков <b><?php echo $kicks = ($data['ban_kicks'] == 0) ? 0 : $data['ban_kicks']?></b></li>
 							<li class="list-group-item d-flex align-items-center">
 								<?php $arr = $SERVERS->getGeoIP($data['player_ip']);

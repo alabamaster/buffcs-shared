@@ -26,6 +26,13 @@ class Servers extends Model
 		return $ip . $port;
 	}
 
+
+	public function getCountAllServers()
+	{
+		$sql = DB::run("SELECT COUNT(id) FROM {$this->DB['prefix']}_serverinfo")->fetchColumn();
+		return $sql;
+	}
+
 	// return array
 	public function getAllServers()
 	{

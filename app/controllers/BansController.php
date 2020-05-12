@@ -11,10 +11,13 @@ class BansController extends Controller
 {
 	public function indexAction()
 	{
+		$SERVERS = new Servers;
 		$vars = [
 			'allBans'		=> $this->model->getAllBans(),
 			'model'			=> $this->model,
 			'allServers'	=> $this->model->getAllServers(),
+			'SERVERS'		=> $SERVERS,
+			'count_serv'	=> $SERVERS->getCountAllServers(),
 		];
 		$this->view->render(Config::get('NAME') . ' - Банлист', $vars);
 	}
@@ -37,7 +40,11 @@ class BansController extends Controller
 		$vars = [
 			'data'		=> $this->model->getDataBan($this->route['id']),
 			'model'		=> $this->model,
-			'cfg'		=> Config::get('BANS'),
+			'ban_cfg' 	=> Config::get('BANS'),
+			'fk_active' => Config::get('FK')['active'],
+			'rk_active' => Config::get('RK')['active'],
+			'ban_price' => Config::get('BANS')['price'],
+			'currency' 	=> Config::get('DISC')['currency'],
 			'SERVERS'	=> $SERVERS,
 		];
 		$this->view->render(Config::get('NAME') . ' - Бан инфо', $vars);
