@@ -9,7 +9,8 @@ return [
 	'RELOADADMINS' 	=> 1, // отправлять amx_reloadadmins после покупки привилегии (в БД amx_serverinfo должен быть rcon)
 	'VK_GROUP'		=> 'https://vk.com/alabamasster1337', // полная ссылка на группу вк
 	'WEB_SERVER_IP'	=> '127.0.0.1', // ip вашего web сервера для отправки cron-a
-	'GEO_IP'		=> 1, // какой модуль geo ip юзать // 0- geoip php, 1 - other api 
+	'GEO_IP'		=> 1, // какой модуль geo ip юзать // 0- geoip php, 1 - other api
+	'BUYERS_SORT'	=> 2, // кого показывать в покупателях // 1 - всех // 2 - всех у кого НЕ кончилась привилегия
 	
 	# настройки банлиста
 	'BANS' => [

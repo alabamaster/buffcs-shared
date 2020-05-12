@@ -73,7 +73,15 @@ class Main extends Model
 	// нужно передавать сервер Id и по нему уже выдавать
 	public function getBuyers()
 	{
-		$sql = DB::run('SELECT * FROM `'.$this->DB['prefix'].'_amxadmins` `t1` JOIN `'.$this->DB['prefix'].'_admins_servers` `t2` WHERE `t1`.`id` = `t2`.`admin_id` AND (`t1`.`tarif_id` != "" OR `t1`.`tarif_id` != 0 OR `t1`.`tarif_id` != NULL) ORDER BY `created` DESC')->fetchAll();
+		switch (Config::get('BUYERS_SORT')) {
+			case 1:
+				$sql = DB::run('SELECT * FROM `'.$this->DB['prefix'].'_amxadmins` `t1` JOIN `'.$this->DB['prefix'].'_admins_servers` `t2` WHERE `t1`.`id` = `t2`.`admin_id` AND (`t1`.`tarif_id` != 0 OR `t1`.`tarif_id` != NULL) ORDER BY `created` DESC')->fetchAll();
+			break;
+			
+			case 2:
+				$sql = DB::run('SELECT * FROM `'.$this->DB['prefix'].'_amxadmins` `t1` JOIN `'.$this->DB['prefix'].'_admins_servers` `t2` WHERE `t1`.`id` = `t2`.`admin_id` AND (`t1`.`tarif_id` != 0 OR `t1`.`tarif_id` != NULL)  AND (`t1`.`expired` >= ? OR `t1`.`expired` = 0) ORDER BY `created` DESC', [$this->time])->fetchAll();
+			break;
+		}
 		return $sql;
 	}
 

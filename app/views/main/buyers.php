@@ -39,7 +39,7 @@ use app\lib\DB;
 									<?=$main->getIcon($row['tarif_id'])?>
 								</td>
 							<?php endif;?>
-								<td data-toggle="tooltip" data-placement="top" data-boundary="window" title="<?=htmlspecialchars($row['nickname'])?>">
+								<td data-toggle="tooltip">
 									<div class="row">
 										<div class="col text-truncate" style="max-width: 250px;">
 											<?=htmlspecialchars($row['nickname'])?>
@@ -47,7 +47,7 @@ use app\lib\DB;
 									</div>
 								</td>
 							<?php if( $main->getCountServers() > 1 ):?>
-								<td data-toggle="tooltip" data-placement="top" data-boundary="window" title="<?=$main->getServerNameById($row['server_id']);?>">
+								<td>
 									<div class="row">
 										<div class="col text-truncate" style="max-width: 250px;">
 											<?=$main->getServerNameById($row['server_id']);?>
@@ -55,17 +55,17 @@ use app\lib\DB;
 									</div>
 								</td>
 							<?php endif;?>
-								<td data-toggle="tooltip" data-placement="top" data-boundary="window" title="<?=$tarif?>">
+								<td>
 									<div class="row">
 										<div class="col text-truncate" style="max-width: 250px;">
 											<?=$tarif?>
 										</div>
 									</div>
 								</td>
-								<td data-toggle="tooltip" data-placement="top" data-boundary="window" title="<?=date('В H:i', $row['created'])?>"><?=date('d.m.Y', $row['created'])?></td>
+								<td data-toggle="tooltip" data-placement="left" data-boundary="window" title="<?=date('В H:i', $row['created'])?>"><?=date('d.m.Y', $row['created'])?></td>
 								
 								<?php if($row['expired'] != 0):?>
-								<td data-toggle="tooltip" data-placement="top" data-boundary="window" title="<?=date('В H:i', $row['expired'])?>"><?=$expired;?></td>
+								<td data-toggle="tooltip" data-placement="left" data-boundary="window" title="<?=date('В H:i', $row['expired'])?>"><?=$expired;?></td>
 								<?php else:?>
 								<td><?=$expired;?></td>
 								<?php endif;?>

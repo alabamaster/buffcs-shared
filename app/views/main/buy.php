@@ -204,6 +204,9 @@ document.addEventListener('DOMContentLoaded', () => {
 		})
 	};
 
+	<?php if(!isset($_SESSION['authorization'])):?>
+	document.querySelector('#checkboxRules').required = true;
+	
 	btnCheckPromo.addEventListener('click', () => {
 		let server	= document.querySelector('#server');
 		let tariff	= document.querySelector('#privilege');
@@ -211,6 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		customFetch('<?=$this->SITE_URL?>buy', `thisPromoCode=${code.value}&server=${server.value}&tariff=${tariff.value}`);
 	});
+	<?php endif;?>
 
 	type.addEventListener('change', () => 
 	{

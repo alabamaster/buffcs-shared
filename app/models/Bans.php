@@ -57,7 +57,7 @@ class Bans extends Model
 
 	public function getAllBans()
 	{
-		$sql = DB::run('SELECT * FROM `'.$this->DB['prefix'].'_bans`')->fetchAll();
+		$sql = DB::run('SELECT * FROM `'.$this->DB['prefix'].'_bans` ORDER BY `bid` DESC')->fetchAll();
 		return $sql;
 	}
 
