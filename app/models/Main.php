@@ -435,14 +435,17 @@ class Main extends Model
 	{
 		if(isset($data['MERCHANT_ORDER_ID'])) 
 		{
+			$core_id = $data['us_core_id'];
 			$pay_id = $data['MERCHANT_ORDER_ID'];
 		} 
 		elseif (isset($data['InvId'])) 
 		{
+			$core_id = $data['shp_core_id'];
 			$pay_id = $data['InvId'];
 		} 
 		elseif (isset($data['account'])) 
 		{
+			$core_id = false;
 			$pay_id = explode('.', $data['account']);
 			$pay_id = $pay_id[0];
 		} 
@@ -460,6 +463,8 @@ class Main extends Model
 			'id' 		=> $logs['id'],
 			'tariff' 	=> $tariff['name'],
 			'expired' 	=> $expired,
+			'core_id'	=> $core_id,
+			'pay_id'	=> $pay_id,
 		];
 		return $data;
 	}

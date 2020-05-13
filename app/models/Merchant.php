@@ -63,10 +63,7 @@ class Merchant extends Model
 	{
 		$query = DB::run('SELECT `address`, `rcon` FROM `'.$this->DB['prefix'].'_serverinfo` WHERE `id` = ?', [ $sid ]);
 		
-		if ( $query->rowCount() < 1 ) { // не нашли ркон
-			$this->error = 'Ошибка отправки, не найден RCON в таблице ' . $this->DB['prefix'] . '_serverinfo, где server id: ' . $sid;
-			return false;
-		}
+		if ( !$query->fetch() ) die('Rcon not found for server where id: ' . $sid);
 
 		try {
 			$cs_server = $query->fetch(PDO::FETCH_ASSOC);

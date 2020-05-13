@@ -311,11 +311,11 @@ class Robokassa extends Model
 		$amount 	= $post['OutSum'];
 		$ban_id 	= $post['InvId'];
 
-		if ( $amount != $price ) die("Error: merchantModels / Freekassa / unBan: fake amount! Ban ID: {$ban_id}\n");
+		if ( $amount != $price ) die("Error: merchantModels / Robokassa / unBan: fake amount! Ban ID: $ban_id. amount: $amount, price: $price");
 
 		try {
 			DB::run("UPDATE `{$this->DB['prefix']}_bans` SET `ban_length` = -1 WHERE `bid` = ?", [ $ban_id ]);
-			echo "OK$pay_id\n";
+			echo "OK$ban_id\n";
 		} catch (Exception $e) {
 			echo 'Error: ' . $e->getMessage();
 		}

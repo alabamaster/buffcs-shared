@@ -79,11 +79,24 @@ class MainController extends Controller
 	{
 		if ( !empty($_POST) ) 
 		{
+			$data = $this->model->paySuccess($_POST);
+
+			if ( $data['core_id'] == 'unban' ) {
+				$this->view->redirect($this->SITE_URL . 'bans/ban' . $data['pay_id']);
+			}
+			
 			$vars = [
 				'data' => $this->model->paySuccess($_POST),
 			];
 			$this->view->render(Config::get('NAME') . ' - Success', $vars);
-		} elseif ( !empty($_GET) ) {
+		} elseif ( !empty($_GET) ) 
+		{
+			$data = $this->model->paySuccess($_GET);
+
+			if ( $data['core_id'] == 'unban' ) {
+				$this->view->redirect($this->SITE_URL . 'bans/ban' . $data['pay_id']);
+			}
+
 			$vars = [
 				'data' => $this->model->paySuccess($_GET),
 			];

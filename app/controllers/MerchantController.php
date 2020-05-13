@@ -76,7 +76,7 @@ class MerchantController extends Controller
 			break;
 
 			case 'unban':
-				$this->FK->unBan($_POST);
+				$this->RK->unBan($_POST);
 			break;
 		}
 	}

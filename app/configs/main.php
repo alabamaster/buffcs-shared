@@ -1,7 +1,7 @@
 <?php 
 return [
 	# настройка сайта
-	'SITEURL' 		=> 'http://buffcs-branch-bans.loc/', // урл сайта
+	'SITEURL' 		=> 'https://buffcs.gq/', // урл сайта
 	'STYLE' 		=> 'default', // стиль сайта ['default']
 	'NAME' 			=> 'BUFFCS', // название сайта
 	'RULES_URL' 	=> '#', // ссылка на правила
@@ -10,12 +10,12 @@ return [
 	'VK_GROUP'		=> 'https://vk.com/alabamasster1337', // полная ссылка на группу вк
 	'WEB_SERVER_IP'	=> '127.0.0.1', // ip вашего web сервера для отправки cron-a
 	'GEO_IP'		=> 1, // какой модуль geo ip юзать // 0- geoip php, 1 - other api
-	'BUYERS_SORT'	=> 2, // кого показывать в покупателях // 1 - всех // 2 - всех у кого НЕ кончилась привилегия
+	'BUYERS_SORT'	=> 1, // кого показывать в покупателях // 1 - всех // 2 - всех у кого НЕ кончилась привилегия
 	
 	# настройки банлиста
 	'BANS' => [
 		'charset'	=> 'latin1', // latin1 или utf8
-		'price'		=> 228, // цена разбана (покупка разбана работает только с freekassa и robokassa)
+		'price'		=> 1, // цена разбана (покупка разбана работает только с freekassa и robokassa)
 		'hide_ip'	=> 0, // скрыть ip // 0/1
 		'hide_id'	=> 0, // скрыть steamid // 0/1
 	],
@@ -28,7 +28,7 @@ return [
 	'SMTP' => [
 		'host' 		=> 'smtp.yandex.ru', // host // example: smtp.yandex.ru
 		'username' 	=> 'mail@yandex.ru', // username // example: mail@yandex.ru
-		'password' 	=> 'yourpassword', // user password
+		'password' 	=> 'qwerty', // user password
 		'port' 		=> 465, // port
 		'from' 		=> 'mail@yandex.ru', // адрес почты ОТ КОГО
 		'reply' 	=> 'mail@yandex.ru', // адрес почты для ответа
@@ -45,10 +45,10 @@ return [
 	# FREEKASSA
 	'FK' => [
 		'active' 		=> 1,
-		'test' 			=> 1, // тест
+		'test' 			=> 0, // тест
 		'merchant_id' 	=> 1337,
-		'secret_word1'	=> 'qwerty123', // секретное слово(пароль) #1
-		'secret_word2' 	=> 'qwerty123', // секретное слово(пароль) #2
+		'secret_word1'	=> 'qwerty', // секретное слово(пароль) #1
+		'secret_word2' 	=> 'qwerty', // секретное слово(пароль) #2
 		'url'			=> 'https://www.free-kassa.ru/merchant/cash.php', // не менять
 	],
 
@@ -56,9 +56,9 @@ return [
 	'RK' => [
 		'active'	=> 1,
 		'test'		=> 1, // тест
-		'shop_id'	=> 'buffcs',  // shop id
-		'pass1'		=> 'qwerty123', // секретное слово(пароль) #1
-		'pass2'		=> 'qwerty123', // секретное слово(пароль) #2
+		'shop_id'	=> 'qwerty',  // shop id
+		'pass1'		=> 'qwerty', // секретное слово(пароль) #1
+		'pass2'		=> 'qwerty', // секретное слово(пароль) #2
 		'url'		=> 'https://auth.robokassa.ru/Merchant/Index.aspx', // не менять
 	],
 
@@ -72,7 +72,7 @@ return [
 		'currency'		=> 'RUB', // валюта
 	],
 
-	# Interkassa [не работает] [проверка sign должна быть отключена]
+	# Interkassa [проверка sign должна быть отключена]
 	'IK' => [
 		'active'		=> 0,
 		'shop_id'		=> 'qwerty',
@@ -81,7 +81,7 @@ return [
 		'url'			=> 'https://sci.interkassa.com/', // не менять
 	],
 
-	# WebMoney [не работает]
+	# WebMoney
 	'WM' => [
 		'active'	=> 0,
 		'test'		=> 1, // тест
@@ -91,7 +91,7 @@ return [
 		'url'		=> '', // url form
 	],
 
-	# WebMoney [не работает]
+	# WebMoney
 	'QIWI' => [
 		'active'		=> 0,
 		'public_key' => 'qwerty', // секретное слово(пароль) #1

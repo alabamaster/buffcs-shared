@@ -95,7 +95,6 @@ class Bans extends Model
 
 	public function goPayUnban($post)
 	{
-		$core_id	= 'core_id=unban';
 		$ban_id		= $post['bid'];
 		$pay_id		= $ban_id; // pay id = ban id
 		$shop		= $post['shop'];
@@ -104,7 +103,7 @@ class Bans extends Model
 		switch ($shop) {
 			case 'freekassa':
 				$sign = md5($this->FK['merchant_id'].':'.$amount.':'.$this->FK['secret_word1'].':'.$pay_id);
-				$url = $this->FK['url'] . '?s=' . $sign . '&o=' . $pay_id . '&m=' . $this->FK['merchant_id'] . '&oa=' . $amount . '&us_' . $core_id;
+				$url = $this->FK['url'] . '?s=' . $sign . '&o=' . $pay_id . '&m=' . $this->FK['merchant_id'] . '&oa=' . $amount . '&us_core_id=unban';
 				return $url;
 			break;
 
@@ -114,37 +113,12 @@ class Bans extends Model
 				$test = ($this->RK['test'] == 1) ? '&IsTest=1' : '';
 				$url = $this->RK['url'];
 
-				$sign = md5("$mrh_login:$amount:$pay_id:$mrh_pass1:shp_$core_id");
-				$url = "$url?MrchLogin=$mrh_login&OutSum=$amount&InvId=$pay_id&SignatureValue=$sign&Culture=ru&Encoding=utf-8&shp_$core_id$test";
+				$sign = md5("$mrh_login:$amount:$pay_id:$mrh_pass1:shp_core_id=unban");
+				$url = "$url?MrchLogin=$mrh_login&OutSum=$amount&InvId=$pay_id&SignatureValue=$sign&Culture=ru&Encoding=utf-8&shp_core_id=unban$test";
 				return $url;
-			break;
 
-			case 'unitpay':
-				$unitPay = new UnitPay($this->UP['domain'], $this->UP['secretKey']);
-				$core_id = explode('=', $core_id);
-				$url = $unitPay->form($this->UP['publicId'], $amount, $pay_id.'.'.$core_id[1], $desc, $this->UP['currency']);
-				return $url;
-			break;
-
-			case 'interkassa':
-				$url = $this->IK['url'].'?ik_co_id='.$this->IK['shop_id'].'&ik_am='.$amount.'&ik_cur=RUB&ik_desc='.$desc.'&ik_inv_id='.$pay_id.'&ik_pm_no='.$pay_id;
-				debug($url);
-				// $url = "$url?MrchLogin=$mrh_login&OutSum=$amount&InvId=$pay_id&SignatureValue=$sign&Culture=ru&Encoding=utf-8&shp_$core_id$test";
-				// return $url;
-			break;
-
-			case 'qiwi':
-				$qiwiObj = new BillPayments;
-				$params = [
-					'publicKey'		=> $this->QIWI['public_key'],
-					'amount' 		=> $amount,
-					'billId'		=> $pay_id,
-					'successUrl'	=> "{$this->SITE_URL}success",
-					'comment'		=> $desc,
-				];
-
-				$url = $qiwiObj->createPaymentForm($params);
-				return $url;
+			default:
+				die('models / bans / goPayUnban: shop error');
 			break;
 		}
 	}
