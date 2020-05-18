@@ -347,35 +347,6 @@ class Account extends Model
 			$check_change = true;
 		}
 
-		// смена типа аккаунта
-		// if ( $post['type'] /*!= $sess_acc['flags']*/ ) 
-		// {
-		// 	$user = ($post['type'] == 'a') ? $post['nickname'] : $post['steamid'];
-
-		// 	if ( empty($user) || mb_strlen($user) < 3 || mb_strlen($user) > 32 ) {
-		// 		$this->error = 'Короткий ник или SteamID';
-		// 		return false;
-		// 	}
-		// 	if ( !$this->checkUsernameInDb($user) ) {
-		// 		return false;
-		// 	}
-			
-		// 	if ( $post['type'] == 'a' ) {
-		// 		DB::run("UPDATE `{$this->DB['prefix']}_amxadmins` SET `flags` = ?, `username` = ?, `steamid` = ?, `nickname` = ? WHERE `id` = ?", 
-		// 			[ $post['type'], $user, $user, $user, $sess_acc['id'] ]);
-		// 	}
-		// 	if ( $post['type'] == 'ac' ) {
-		// 		DB::run("UPDATE `{$this->DB['prefix']}_amxadmins` SET `flags` = ?, `username` = ?, `steamid` = ?, `nickname` = ? WHERE `id` = ?", 
-		// 			[ $post['type'], $user, $user, $user, $sess_acc['id'] ]);
-		// 	}
-		// 	$_SESSION['account']['username'] = $user;
-		// 	$_SESSION['account']['steamid'] = $user;
-		// 	$_SESSION['account']['nickname'] = $user;
-		// 	$_SESSION['account']['flags'] = $post['type'];
-
-		// 	$check_change = true;
-		// }
-
 		if ( $check_change == false ) {
 			$this->error = 'Вы ничего не поменяли, зачем нажимать кнопку?';
 			return false;
