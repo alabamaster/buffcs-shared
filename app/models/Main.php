@@ -36,10 +36,10 @@ class Main extends Model
 		$FK 	= ($this->FK['active'] == 1) ? $FK = '<option value="freekassa">Freekassa</option>' : '';
 		$RK 	= ($this->RK['active'] == 1) ? $RK = '<option value="robokassa">Robokassa</option>' : '';
 		$UP 	= ($this->UP['active'] == 1) ? $UP = '<option value="unitpay">UnitPay</option>' : '';
-		$IK 	= ($this->IK['active'] == 1) ? $IK = '<option value="interkassa">Interkassa</option>' : '';
-		$WM 	= ($this->WM['active'] == 1) ? $WM = '<option value="webmoney">WebMoney</option>' : '';
-		$QIWI 	= ($this->QIWI['active'] == 1) ? $QIWI = '<option value="qiwi">QIWI</option>' : '';
-		$html 	= $FK . $RK . $UP . $IK . $WM . $QIWI;
+		// $IK 	= ($this->IK['active'] == 1) ? $IK = '<option value="interkassa">Interkassa</option>' : '';
+		// $WM 	= ($this->WM['active'] == 1) ? $WM = '<option value="webmoney">WebMoney</option>' : '';
+		// $QIWI 	= ($this->QIWI['active'] == 1) ? $QIWI = '<option value="qiwi">QIWI</option>' : '';
+		$html 	= $FK . $RK . $UP /*. $IK . $WM . $QIWI*/;
 		return $html;
 	}
 
