@@ -17,7 +17,7 @@ return [
 		'controller'=> 'main',
 		'action' => 'error',
 	],
-	'success{success\?(.*)}' => [ // success\?(.*)
+	'success{success\?(.*)}' => [
 		'controller'=> 'main',
 		'action' => 'success',
 	],
@@ -93,7 +93,7 @@ return [
 		'controller' => 'account',
 		'action' => 'update',
 	],
-	'account/reset' => [ // account/reset/{token:\w+}
+	'account/reset' => [
 		'controller' => 'account',
 		'action' => 'reset',
 	],
@@ -111,25 +111,13 @@ return [
 		'controller'=> 'merchant',
 		'action' => 'robokassa',
 	],
-	'merchant/webmoney' => [
-		'controller'=> 'merchant',
-		'action' => 'webmoney',
-	],
 	'merchant/unitpay{unitpay\?(.*)}' => [
 		'controller'=> 'merchant',
 		'action' => 'unitpay',
 	],
-	'merchant/qiwi' => [
-		'controller'=> 'merchant',
-		'action' => 'qiwi',
-	],
-	'merchant/yandexmoney' => [
-		'controller'=> 'merchant',
-		'action' => 'yandexmoney',
-	],
 
 	// BansController
-	'bans{page:.*\/|\z|\/\d+}' => [ // {page:.*} // {page:\/\d+}
+	'bans{page:.*\/|\z|\/\d+}' => [
 		'controller' => 'bans',
 		'action' => 'index',
 	],
