@@ -408,26 +408,24 @@ class Main extends Model
 				return $url;
 			break;
 
-			case 'interkassa':
-				$url = $this->IK['url'].'?ik_co_id='.$this->IK['shop_id'].'&ik_am='.$order_amount.'&ik_cur=RUB&ik_desc='.$desc.'&ik_inv_id='.$pay_id.'&ik_pm_no='.$pay_id;
-				debug($url);
-				// $url = "$url?MrchLogin=$mrh_login&OutSum=$order_amount&InvId=$pay_id&SignatureValue=$sign&Culture=ru&Encoding=utf-8&shp_$core_id$test";
-				// return $url;
-			break;
+			// case 'interkassa':
+			// 	$url = $this->IK['url'].'?ik_co_id='.$this->IK['shop_id'].'&ik_am='.$order_amount.'&ik_cur=RUB&ik_desc='.$desc.'&ik_inv_id='.$pay_id.'&ik_pm_no='.$pay_id;
+			// 	debug($url);
+			// break;
 
-			case 'qiwi':
-				$qiwiObj = new BillPayments;
-				$params = [
-					'publicKey'		=> $this->QIWI['public_key'],
-					'amount' 		=> $order_amount,
-					'billId'		=> $pay_id,
-					'successUrl'	=> "{$this->SITE_URL}success",
-					'comment'		=> $desc,
-				];
+			// case 'qiwi':
+			// 	$qiwiObj = new BillPayments;
+			// 	$params = [
+			// 		'publicKey'		=> $this->QIWI['public_key'],
+			// 		'amount' 		=> $order_amount,
+			// 		'billId'		=> $pay_id,
+			// 		'successUrl'	=> "{$this->SITE_URL}success",
+			// 		'comment'		=> $desc,
+			// 	];
 
-				$url = $qiwiObj->createPaymentForm($params);
-				return $url;
-			break;
+			// 	$url = $qiwiObj->createPaymentForm($params);
+			// 	return $url;
+			// break;
 		}
 	}
 
