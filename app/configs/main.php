@@ -72,6 +72,32 @@ return [
 		'currency'		=> 'RUB', // валюта
 	],
 
+	# Interkassa [проверка sign должна быть отключена]
+	'IK' => [
+		'active'		=> 0,
+		'shop_id'		=> 'qwerty',
+		'secret_key'	=> 'qwerty', // секретное слово(пароль) #1
+		'test_key'		=> 'qwerty', // секретное слово(пароль) #2
+		'url'			=> 'https://sci.interkassa.com/', // не менять
+	],
+
+	# WebMoney
+	'WM' => [
+		'active'	=> 0,
+		'test'		=> 1, // тест
+		'shop_id'	=> '',
+		'pass1'		=> '', // секретное слово(пароль) #1
+		'pass2'		=> '', // секретное слово(пароль) #2
+		'url'		=> '', // url form
+	],
+
+	# WebMoney
+	'QIWI' => [
+		'active'		=> 0,
+		'public_key' => 'qwerty', // секретное слово(пароль) #1
+		'secret_key' => 'qwerty', // секретное слово(пароль) #2
+	],
+
 	'TEXT' => [
 		// голубой блок на главной
 		'info_block' => '

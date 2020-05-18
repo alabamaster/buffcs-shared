@@ -143,4 +143,39 @@ class MerchantController extends Controller
 			print $unitPay->getErrorHandlerResponse($e->getMessage());
 		}
 	}
+
+	public function interkassaAction()
+	{
+		die('ok');
+		if ( !isset($_POST['us_core_id']) ) die('core id not found');
+
+		switch ( $_POST['us_core_id'] ) 
+		{
+			case '1': // обычная покупка
+				$this->FK->checkPay($_POST);
+			break;
+
+			case '2': // покупа авторизованного юзера
+				$this->FK->checkAuthPay($_POST);
+			break;
+
+			case '3': // продление авторизованного юзера
+				$this->FK->checkAuthPay($_POST);
+			break;
+		}
+	}
+
+	public function webmoneyAction()
+	{
+		die('this webmoney action');
+	}
+
+	public function qiwiAction()
+	{
+		die('this qiwi action');
+	}
+	public function yandexmoneyAction()
+	{
+		die('this yandexmoney action');
+	}
 }
