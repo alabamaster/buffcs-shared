@@ -28,7 +28,7 @@
 								<tr>
 									<td>
 										<div class="row">
-											<div class="col text-truncate" style="max-width: 250px;">
+											<div class="col text-truncate" style="max-width: 200px;">
 												<a href="<?= $this->SITE_URL ?>bans/ban<?= $row['bid'] ?>"><?= htmlspecialchars($row['player_nick']) ?></a>
 											</div>
 										</div>
@@ -47,7 +47,7 @@
 									</td>';
 									}?>
 									<td>
-										<div class="row"><div class="col text-truncate"><?=$row['ban_reason']?></div>
+										<div class="row"><div class="col text-truncate" style="max-width: 200px;"><?=$row['ban_reason']?></div>
 										</div>
 									</td>
 									<td>
