@@ -192,19 +192,19 @@ class Sendmailer extends Model
 					// Content
 					$this->MAILER->isHTML(true); // Set email format to HTML
 					$this->MAILER->Subject = Config::get('NAME') . ' — ✉ Окончание привилегии ⛔';
-					$this->MAILER->Body    = '
-			<div style="font-size:15px;background-color:#fff;border:2px solid #c7c7c7;border-radius:2px;padding:20px;line-height: 1.5;font-weight: 400;">
-				<p style="margin:0;">
-					<b style="color: #e00000;>Срок ваших привилегий подходит к концу!</b><hr>
-					👤 Ваш '.$values['user_type'].': <b>'.$values['user_name'].'</b><br>
-					📅 Дата покупки: <b>'.$values['created'].'</b><br>
-					📆 Дата окончания: <b>'.$values['expired'].'</b><br>
-					🕹️ Сервер: <b>'.$values['server'].'</b><br>
-					⚡ Привилегия: <b>'.$values['privilege'].'</b>
-					<hr>
-					⚠ Продлить привилегию или купить новую, Вы можете в <a href="'.Config::get('SITEURL').'account/login">личном кабинете</a>!
-				</p>
-			</div>';
+					$this->MAILER->Body    = "
+	<div style='font-size:15px;background-color:#fff;border:2px solid #c7c7c7;border-radius:2px;padding:20px;line-height: 1.5;font-weight: 400;'>
+		<p style='margin:0;'>
+			<b style='color:#e00000;'>Срок ваших привилегий подходит к концу!</b><hr>
+			👤 Ваш {$values['user_type']}: <b>{$values['user_name']}</b><br>
+			📅 Дата покупки: <b>{$values['created']}</b><br>
+			📆 Дата окончания: <b>{$values['expired']}</b><br>
+			🕹️ Сервер: <b>{$values['server']}</b><br>
+			⚡ Привилегия: <b>{$values['privilege']}</b>
+			<hr>
+			⚠ Продлить привилегию или купить новую, Вы можете в <a href='".Config::get('SITEURL')."account/login'>личном кабинете</a>!
+		</p>
+	</div>";
 					$this->MAILER->AltBody = 'Откройте письмо в браузере с поддержкой HTML';
 
 					$this->MAILER->send();
