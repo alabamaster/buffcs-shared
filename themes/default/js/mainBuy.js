@@ -5,8 +5,6 @@
 	const typeAccess 		= document.querySelector('#type');
 	let user 				= document.querySelector('#nickname');
 	
-	document.querySelector('#checkboxRules').required = true;
-
 	const url = 'app/js_post/actionBuy.php';
 	const server 	= document.querySelector('#server');
 	const privilege = document.querySelector('#privilege');

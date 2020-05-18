@@ -26,6 +26,13 @@ class Servers extends Model
 		return $ip . $port;
 	}
 
+
+	public function getCountAllServers()
+	{
+		$sql = DB::run("SELECT COUNT(id) FROM {$this->DB['prefix']}_serverinfo")->fetchColumn();
+		return $sql;
+	}
+
 	// return array
 	public function getAllServers()
 	{
@@ -65,5 +72,20 @@ class Servers extends Model
 		$sql = DB::run('SELECT `name` FROM `ez_privileges` WHERE `id` = ?', [ $pid ])->fetch(PDO::FETCH_ASSOC);
 		if(empty($sql)) return 'privilege not found';
 		return $sql['name'];
+	}
+
+	public function getGeoIP($user_ip)
+	{
+		if ( Config::get('GEO_IP') == 0 ) {
+			$country_code = mb_strtolower(geoip_country_code_by_name($user_ip));
+			$country_name = geoip_country_name_by_name($user_ip);
+			return $data = ['code' => $country_code, 'name' => $country_name];
+		} else {
+			$json = file_get_contents('https://freegeoip.app/json/' . $user_ip);
+			$array = json_decode($json, true);
+			$country_code = mb_strtolower($array['country_code']);
+			$country_name = mb_strtolower($array['country_name']);
+			return $data = ['code' => $country_code, 'name' => $country_name];
+		}
 	}
 }

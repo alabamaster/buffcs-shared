@@ -299,4 +299,20 @@ class Freekassa extends Model
 			break;
 		}
 	}
+
+	public function unBan($post)
+	{
+		$price 	= Config::get('BANS')['price'];
+		$amount = $post['AMOUNT'];
+		$ban_id	= $post['MERCHANT_ORDER_ID'];
+
+		if ( $amount != $price ) die("Error: merchantModels / Freekassa / unBan: fake amount! Ban ID: {$ban_id}\n");
+
+		try {
+			DB::run("UPDATE `{$this->DB['prefix']}_bans` SET `ban_length` = -1 WHERE `bid` = ?", [ $ban_id ]);
+			echo "OK$pay_id\n";
+		} catch (Exception $e) {
+			echo 'Error: ' . $e->getMessage();
+		}
+	}
 }

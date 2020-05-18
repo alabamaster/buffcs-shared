@@ -4,34 +4,25 @@ use app\models\Main;
 $main = new Main;
 use app\lib\DB;
 ?>
-<style>
-	.tr-hover-effect tr:hover {
-		background-color: #c9e8ff !important;
-		transition: all 0.2s ease-in-out 0s;
-	}
-	.tr-hover-effect tr td {
-		border-bottom:1px solid #e9e9ec !important;
-	}
-</style>
 <div class="container">
 	<div class="row">
 		<div class="col-md-12">
 			<div class="box">
 				<div class="table-responsive">
-					<table class="table table-hover">
+					<table class="table table-hover" id="table-data-buyers">
 						<thead>
 							<tr>
 							<?php if(Config::get('ICONS') == 1):?>
-								<th class="text-center border-0 d-flex justify-content-center"><i class="fa fa-info" aria-hidden="true"></i></th>
+								<th class="nosort text-center border-0 d-flex justify-content-center"><i class="fa fa-info"></i></th>
 							<?php endif;?>
-								<th class="border-0">Ник игрока</th>
+								<th class="nosort border-0">Ник игрока</th>
 							<?php if( $main->getCountServers() > 1 ):?>
 								<th class="border-0">Сервер</th>
 							<?php endif;?>
 								<th class="border-0">Привилегия</th>
-								<th class="border-0">Начало</th>
-								<th class="border-0">Окончание</th>
-								<th class="border-0"><i class="fa fa-vk" aria-hidden="true"></i></th>
+								<th class="nosort border-0">Начало</th>
+								<th class="nosort border-0">Окончание</th>
+								<th class="nosort border-0"><i class="fa fa-vk"></i></th>
 							</tr>
 						</thead>
 						<tbody class="tr-hover-effect">
@@ -39,7 +30,7 @@ use app\lib\DB;
 							foreach ($buyers as $row):
 								$expired = ($row['expired'] == 0) ? 'Никогда' : date('d.m.Y', $row['expired']);
 								$tarif = ($row['tarif_id'] == null || $row['tarif_id'] == 0) ? 'Unknown' : $main->getPrivilegeNameById($row['tarif_id']);
-								$bgred = ($row['expired'] < time() && $row['expired'] != 0) ? 'style="background-color: #ffebcf"' : '';
+								$bgred = ($row['expired'] < time() && $row['expired'] != 0) ? 'style="background-color: #fff9eb"' : '';
 								$vk = ($row['vk'] != null) ? '<span class="text-info"><a href="https://'.htmlspecialchars($row['vk']).'" target="_blank"><i class="fa fa-vk"></i></a></span>' : '<span class="text-secondary"><i class="fa fa-vk"></i></span>';
 						?>
 							<tr <?=$bgred?>>
@@ -48,7 +39,7 @@ use app\lib\DB;
 									<?=$main->getIcon($row['tarif_id'])?>
 								</td>
 							<?php endif;?>
-								<td data-toggle="tooltip" data-placement="top" data-boundary="window" title="<?=htmlspecialchars($row['nickname'])?>">
+								<td data-toggle="tooltip">
 									<div class="row">
 										<div class="col text-truncate" style="max-width: 250px;">
 											<?=htmlspecialchars($row['nickname'])?>
@@ -56,7 +47,7 @@ use app\lib\DB;
 									</div>
 								</td>
 							<?php if( $main->getCountServers() > 1 ):?>
-								<td data-toggle="tooltip" data-placement="top" data-boundary="window" title="<?=$main->getServerNameById($row['server_id']);?>">
+								<td>
 									<div class="row">
 										<div class="col text-truncate" style="max-width: 250px;">
 											<?=$main->getServerNameById($row['server_id']);?>
@@ -64,17 +55,17 @@ use app\lib\DB;
 									</div>
 								</td>
 							<?php endif;?>
-								<td data-toggle="tooltip" data-placement="top" data-boundary="window" title="<?=$tarif?>">
+								<td>
 									<div class="row">
 										<div class="col text-truncate" style="max-width: 250px;">
 											<?=$tarif?>
 										</div>
 									</div>
 								</td>
-								<td data-toggle="tooltip" data-placement="top" data-boundary="window" title="<?=date('В H:i', $row['created'])?>"><?=date('d.m.Y', $row['created'])?></td>
+								<td data-toggle="tooltip" data-placement="left" data-boundary="window" title="<?=date('В H:i', $row['created'])?>"><?=date('d.m.Y', $row['created'])?></td>
 								
 								<?php if($row['expired'] != 0):?>
-								<td data-toggle="tooltip" data-placement="top" data-boundary="window" title="<?=date('В H:i', $row['expired'])?>"><?=$expired;?></td>
+								<td data-toggle="tooltip" data-placement="left" data-boundary="window" title="<?=date('В H:i', $row['expired'])?>"><?=$expired;?></td>
 								<?php else:?>
 								<td><?=$expired;?></td>
 								<?php endif;?>
@@ -107,6 +98,20 @@ use app\lib\DB;
 														<div class="row mb-1 border-bottom pb-2 pt-3 align-items-center">
 															<div class="col-3">#ID</div>
 															<div class="col-9"><?=$row['id']?></div>
+														</div>
+														<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
+															<div class="col-3">Показывть</div>
+															<div class="col-9">
+																<select name="show" class="form-control form-control-sm">
+																	<?php if($row['ashow'] == 1):?>
+																		<option value="0">Скрыть</option>
+																		<option value="1" selected="">Показывать</option>
+																	<?php else:?>
+																		<option value="0" selected="">Скрыть</option>
+																		<option value="1">Показывать</option>
+																	<?php endif;?>
+																</select>
+															</div>
 														</div>
 														<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
 															<div class="col-3">Ник</div>
@@ -205,3 +210,33 @@ use app\lib\DB;
 		</div>
 	</div>
 </div>
+<script>
+$(document).ready(function() 
+{
+	$('#table-data-buyers').DataTable({
+		columnDefs: [{
+			targets: 'nosort',
+			orderable: false
+		}],
+		"aaSorting": [],
+		"processing": true,
+		'language' : {
+			"lengthMenu":		"Показать _MENU_ записей",
+			"emptyTable":		"Данные отсутствуют в таблице",
+			"info":				"Показано с _START_ по _END_ из _TOTAL_ записей",
+			"infoFiltered":		"(фильтрация из _MAX_ записей)",
+			"infoEmpty":		"Нет записей",
+			"loadingRecords": 	"Loading...",
+			"processing":		"Processing...",
+			"search":			"Поиск",
+			"zeroRecords":		"Не найдено подходящих записей",
+			"paginate": {
+				"first":		"Первая",
+				"last":			"Последняя",
+				"next":			"Следующая",
+				"previous":		"Предыдущая"
+			},
+		},
+	});
+});
+</script>

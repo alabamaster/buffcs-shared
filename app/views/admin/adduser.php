@@ -23,13 +23,13 @@
 						<div class="col">
 							<div class="form-group">
 								<label>Пароль <span class="text-danger">*</span></label>
-								<input type="text" id="password" name="password" class="form-control form-control-sm">
+								<input type="text" id="password" name="password" class="form-control form-control-sm" required="">
 							</div>
 						</div>
 						<div class="col">
 							<div class="form-group">
 								<label>Почта <span class="text-danger">*</span></label>
-								<input type="email" id="email" name="email" class="form-control form-control-sm">
+								<input type="email" id="email" name="email" class="form-control form-control-sm" required="">
 							</div>
 						</div>
 					</div>
@@ -48,7 +48,7 @@
 						<div class="col">
 							<div class="form-group">
 								<label>Флаги доступа <span class="text-danger">*</span></label>
-								<input type="text" id="access" name="access" class="form-control form-control-sm">
+								<input type="text" id="access" name="access" class="form-control form-control-sm" required="">
 							</div>
 						</div>
 					</div>
@@ -56,12 +56,12 @@
 						<div class="col">
 							<div class="form-group">
 								<label>Дни (0 - навсегда) <span class="text-danger">*</span></label>
-								<input type="text" id="days" name="days" class="form-control form-control-sm">
+								<input type="text" id="days" name="days" class="form-control form-control-sm" required="">
 							</div>
 						</div>
 						<div class="col">
 							<div class="form-group">
-								<label>Всем виден? <span class="text-danger">*</span></label>
+								<label>Всем виден?</label>
 								<select id="show" name="show" class="form-control form-control-sm">
 									<option value="1" selected="">Да</option>
 									<option value="0">Нет</option>
@@ -73,7 +73,7 @@
 						<div class="col">
 							<div class="form-group">
 								<label>#ID привилегии <span class="text-danger">*</span></label>
-								<input type="text" id="privilege" name="privilege" class="form-control form-control-sm" placeholder="Не пишите 0">
+								<input type="text" id="privilege" name="privilege" class="form-control form-control-sm" placeholder="Не пишите 0" required="">
 							</div>
 						</div>
 						<div class="col">

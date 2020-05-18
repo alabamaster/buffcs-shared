@@ -29,7 +29,7 @@
 					<div class="form-group">
 						<label>Скидка промокода</label>
 						<input name="codeDiscount" id="codeDiscount" type="text" class="form-control form-control-sm" required="">
-						<small class="text-muted">Указывать только целое число, <b>без знака %</b><br>Сидка промокода и глобальная скидка складываются вместе!</small>
+						<small class="text-muted">Указывать только целое число, <b>без знака %</b><br>Скидка промокода и глобальная складываются вместе!</small>
 					</div>
 					<div class="d-flex justify-content-between align-items-center">
 						<div class="form-group w-100">

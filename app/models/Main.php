@@ -73,7 +73,15 @@ class Main extends Model
 	// нужно передавать сервер Id и по нему уже выдавать
 	public function getBuyers()
 	{
-		$sql = DB::run('SELECT * FROM `'.$this->DB['prefix'].'_amxadmins` `t1` JOIN `'.$this->DB['prefix'].'_admins_servers` `t2` WHERE `t1`.`id` = `t2`.`admin_id` ORDER BY `created` DESC')->fetchAll();
+		switch (Config::get('BUYERS_SORT')) {
+			case 1:
+				$sql = DB::run('SELECT * FROM `'.$this->DB['prefix'].'_amxadmins` `t1` JOIN `'.$this->DB['prefix'].'_admins_servers` `t2` WHERE `t1`.`id` = `t2`.`admin_id` AND (`t1`.`tarif_id` != 0 OR `t1`.`tarif_id` != NULL) ORDER BY `created` DESC')->fetchAll();
+			break;
+			
+			case 2:
+				$sql = DB::run('SELECT * FROM `'.$this->DB['prefix'].'_amxadmins` `t1` JOIN `'.$this->DB['prefix'].'_admins_servers` `t2` WHERE `t1`.`id` = `t2`.`admin_id` AND (`t1`.`tarif_id` != 0 OR `t1`.`tarif_id` != NULL)  AND (`t1`.`expired` >= ? OR `t1`.`expired` = 0) ORDER BY `created` DESC', [$this->time])->fetchAll();
+			break;
+		}
 		return $sql;
 	}
 
@@ -115,7 +123,7 @@ class Main extends Model
 		$sql = DB::run('SELECT * FROM `'.$this->DB['prefix'].'_amxadmins` `t1` JOIN `'.$this->DB['prefix'].'_admins_servers` `t2` WHERE `t1`.`id` = ? AND `t1`.`id` = `t2`.`admin_id` LIMIT 1', 
 			[$post['user_id']])->fetch(PDO::FETCH_ASSOC);
 
-		$username = ($post['type'] == 'a') ? htmlspecialchars($post['nickname']) : htmlspecialchars($post['steamid']);
+		$username = ($post['type'] == 'a') ? $post['nickname'] : $post['steamid'];
 
 		if ( !$sql ) {
 			$this->errro = 'Ошибка получения ID игрока';
@@ -146,9 +154,14 @@ class Main extends Model
 						return false;
 					}
 					DB::run('UPDATE `'.$this->DB['prefix'].'_amxadmins` SET `username` = ?, `steamid` = ?, `nickname` = ? WHERE `id` = ?', 
-						[ $username, $username, htmlspecialchars($post['nickname']), $post['user_id'] ]);
+						[ $username, $username, $username, $post['user_id'] ]);
 				}
 			break;
+		}
+
+		// check ashow
+		if ( $post['show'] != $sql['ashow'] ) {
+			DB::run('UPDATE `'.$this->DB['prefix'].'_amxadmins` SET `ashow` = ? WHERE `id` = ?', [ $post['show'], $post['user_id'] ]);
 		}
 
 		// check email
@@ -156,7 +169,7 @@ class Main extends Model
 			if ( $this->emailExist($post['email']) ) {
 				return false;
 			}
-			DB::run('UPDATE `'.$this->DB['prefix'].'_admins_servers` SET `email` = ? WHERE `admin_id` = ?', [ htmlspecialchars($post['email']), $post['user_id'] ]);
+			DB::run('UPDATE `'.$this->DB['prefix'].'_admins_servers` SET `email` = ? WHERE `admin_id` = ?', [ $post['email'], $post['user_id'] ]);
 		}
 
 		// check vk
@@ -164,12 +177,12 @@ class Main extends Model
 			if ( $this->vkExist($post['vk']) ) {
 				return false;
 			}
-			DB::run('UPDATE `'.$this->DB['prefix'].'_admins_servers` SET `vk` = ? WHERE `admin_id` = ?', [ htmlspecialchars($post['vk']), $post['user_id'] ]);
+			DB::run('UPDATE `'.$this->DB['prefix'].'_admins_servers` SET `vk` = ? WHERE `admin_id` = ?', [ $post['vk'], $post['user_id'] ]);
 		}
 
 		// check type access
 		if ( $post['type'] != $sql['flags'] ) {
-			DB::run('UPDATE `'.$this->DB['prefix'].'_amxadmins` SET `flags` = ? WHERE `id` = ?', [ htmlspecialchars($post['type']), $post['user_id'] ]);
+			DB::run('UPDATE `'.$this->DB['prefix'].'_amxadmins` SET `flags` = ? WHERE `id` = ?', [ $post['type'], $post['user_id'] ]);
 		}
 
 		// check server
@@ -264,8 +277,6 @@ class Main extends Model
 
 	public function emailExist($email)
 	{
-		$email = trim(htmlspecialchars($email));
-
 		if ( mb_strlen($email) < 3 || mb_strlen($email) > 30 ) {
 			$this->error = 'Email должен быть от 3 до 30 символов!';
 			return true;
@@ -286,8 +297,8 @@ class Main extends Model
 			$this->error = 'Выберите сервер';
 			return true;
 		}
-		$username = ($post['type'] == 'a') ? $username = trim($post['nickname']) : $username = trim($post['steamid']);
-		// $username = ($post['type'] == 'a')? $username = $post['nickname'] : $username = $post['steamid'];
+
+		$username = ($post['type'] == 'a') ? $post['nickname'] : $username = $post['steamid'];
 
 		if ( mb_strlen($username) < 3 || mb_strlen($username) > 30 ) {
 			$this->error = 'Ник или SteamID должен быть от 3 до 30 символов! (кириллица от 3 до 15)';
@@ -424,14 +435,17 @@ class Main extends Model
 	{
 		if(isset($data['MERCHANT_ORDER_ID'])) 
 		{
+			$core_id = $data['us_core_id'];
 			$pay_id = $data['MERCHANT_ORDER_ID'];
 		} 
 		elseif (isset($data['InvId'])) 
 		{
+			$core_id = $data['shp_core_id'];
 			$pay_id = $data['InvId'];
 		} 
 		elseif (isset($data['account'])) 
 		{
+			$core_id = false;
 			$pay_id = explode('.', $data['account']);
 			$pay_id = $pay_id[0];
 		} 
@@ -449,6 +463,8 @@ class Main extends Model
 			'id' 		=> $logs['id'],
 			'tariff' 	=> $tariff['name'],
 			'expired' 	=> $expired,
+			'core_id'	=> $core_id,
+			'pay_id'	=> $pay_id,
 		];
 		return $data;
 	}

@@ -121,6 +121,15 @@ class AdminController extends Controller
 		{
 			$MAIN = new Main;
 
+			$username = ($_POST['type'] == 'a') ? $_POST['nickname'] : $_POST['steamid'];
+
+			if( 
+				empty($username) || empty($_POST['password']) || empty($_POST['email']) || $_POST['server'] == 0 || 
+				empty($_POST['access']) || empty($_POST['days']) || empty($_POST['privilege'])
+			) {
+				$this->view->message('error', 'Заполните все поля с красной звёздочкой');
+			}
+
 			// проверка ника
 			if ( $MAIN->userExist($_POST) ) {
 				$this->view->message('error', 'Такой ник или стимайди уже занят');
