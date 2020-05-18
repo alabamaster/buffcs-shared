@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: localhost:3306
--- Время создания: Апр 29 2020 г., 15:35
+-- Время создания: Май 18 2020 г., 08:58
 -- Версия сервера: 10.1.41-MariaDB-0+deb9u1
 -- Версия PHP: 7.3.13-1+0~20191218.50+debian9~1.gbp23c2da
 
@@ -113,6 +113,8 @@ CREATE TABLE `ez_promo_codes` (
 
 CREATE TABLE `ez_promo_logs` (
   `id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `was_used` tinyint(4) NOT NULL DEFAULT '0',
   `browser` varchar(255) DEFAULT NULL,
   `token` varchar(255) DEFAULT NULL,
   `code` varchar(255) NOT NULL,
@@ -169,32 +171,32 @@ ALTER TABLE `ez_promo_logs`
 -- AUTO_INCREMENT для таблицы `ez_buy_logs`
 --
 ALTER TABLE `ez_buy_logs`
-  MODIFY `table_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `table_id` int(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT для таблицы `ez_editor`
 --
 ALTER TABLE `ez_editor`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT для таблицы `ez_privileges`
 --
 ALTER TABLE `ez_privileges`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT для таблицы `ez_privileges_times`
 --
 ALTER TABLE `ez_privileges_times`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT для таблицы `ez_promo_codes`
 --
 ALTER TABLE `ez_promo_codes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT для таблицы `ez_promo_logs`
 --
 ALTER TABLE `ez_promo_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
