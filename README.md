@@ -3,7 +3,7 @@
 
 **Используется mysql pdo и bootstrap 4**
 
-#### Инструкция
+#### ИНСТРУКЦИЯ
 1. файлы закинуть в корень сайта(там где обычно index.php или index.html)
 2. импортировать sql.sql в базу данных csbans
 3. в тиблицу amx_admins_servers добавить 3 поля как на скрине https://prnt.sc/s82w13
@@ -19,14 +19,16 @@
 - метод GET
 - url: site.ru/success
 
-**error(fail)** 
+**error(fail)**
 - метод GET
 - url: site.ru/error
 
-**result(обработчик)** 
+**result(обработчик)**
 - метод POST
 - url для freekassa: site.ru/merchant/freekassa
 - url для robokassa: site.ru/merchant/robokassa
 - url для unitpay: site.ru/merchant/unitpay
 
-**Важно! Для UnitPay все методы - GET**
+#### ВАЖНО
+1. Для UnitPay все методы - GET
+2. Что бы функция смены привилегии (https://buffcs.gq/account/profile/change) работала корректно, у привилегии должен быть выбор 30ти дней. Не важно какое кол-во дней вы сделаете, главное чтобы был выбор 30ти дней
