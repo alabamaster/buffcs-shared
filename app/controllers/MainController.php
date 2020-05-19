@@ -64,8 +64,7 @@ class MainController extends Controller
 			if ( !$this->model->buyerDataUpdate($_POST) ) {
 				$this->view->message('error', $this->model->error);
 			}
-			// $this->view->reload();
-			$this->view->message('success', 'save ok');
+			$this->view->reload();
 		}
 		$vars = [
 			'buyers' 		=> $this->model->getBuyers(),

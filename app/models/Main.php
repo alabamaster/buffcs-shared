@@ -73,14 +73,27 @@ class Main extends Model
 	// нужно передавать сервер Id и по нему уже выдавать
 	public function getBuyers()
 	{
-		switch (Config::get('BUYERS_SORT')) {
-			case 1:
+		if ( isset($_SESSION['admin']) ) 
+		{
+			switch (Config::get('BUYERS_SORT')) {
+				case 1:
 				$sql = DB::run('SELECT * FROM `'.$this->DB['prefix'].'_amxadmins` `t1` JOIN `'.$this->DB['prefix'].'_admins_servers` `t2` WHERE `t1`.`id` = `t2`.`admin_id` AND (`t1`.`tarif_id` != 0 OR `t1`.`tarif_id` != NULL) ORDER BY `created` DESC')->fetchAll();
-			break;
-			
-			case 2:
-				$sql = DB::run('SELECT * FROM `'.$this->DB['prefix'].'_amxadmins` `t1` JOIN `'.$this->DB['prefix'].'_admins_servers` `t2` WHERE `t1`.`id` = `t2`.`admin_id` AND (`t1`.`tarif_id` != 0 OR `t1`.`tarif_id` != NULL)  AND (`t1`.`expired` >= ? OR `t1`.`expired` = 0) ORDER BY `created` DESC', [$this->time])->fetchAll();
-			break;
+				break;
+				
+				case 2:
+					$sql = DB::run('SELECT * FROM `'.$this->DB['prefix'].'_amxadmins` `t1` JOIN `'.$this->DB['prefix'].'_admins_servers` `t2` WHERE `t1`.`id` = `t2`.`admin_id` AND (`t1`.`tarif_id` != 0 OR `t1`.`tarif_id` != NULL)  AND (`t1`.`expired` >= ? OR `t1`.`expired` = 0) ORDER BY `created` DESC', [$this->time])->fetchAll();
+				break;
+			}
+		} else {
+			switch (Config::get('BUYERS_SORT')) {
+				case 1:
+					$sql = DB::run('SELECT * FROM `'.$this->DB['prefix'].'_amxadmins` `t1` JOIN `'.$this->DB['prefix'].'_admins_servers` `t2` WHERE `t1`.`id` = `t2`.`admin_id` AND (`t1`.`tarif_id` != 0 OR `t1`.`tarif_id` != NULL) AND `ashow` = 1 ORDER BY `created` DESC')->fetchAll();
+				break;
+				
+				case 2:
+					$sql = DB::run('SELECT * FROM `'.$this->DB['prefix'].'_amxadmins` `t1` JOIN `'.$this->DB['prefix'].'_admins_servers` `t2` WHERE `t1`.`id` = `t2`.`admin_id` AND (`t1`.`tarif_id` != 0 OR `t1`.`tarif_id` != NULL)  AND (`t1`.`expired` >= ? OR `t1`.`expired` = 0) AND `ashow` = 1 ORDER BY `created` DESC', [$this->time])->fetchAll();
+				break;
+			}
 		}
 		return $sql;
 	}

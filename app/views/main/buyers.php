@@ -100,7 +100,7 @@ use app\lib\DB;
 															<div class="col-9"><?=$row['id']?></div>
 														</div>
 														<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
-															<div class="col-3">Показывть</div>
+															<div class="col-3">Показывать</div>
 															<div class="col-9">
 																<select name="show" class="form-control form-control-sm">
 																	<?php if($row['ashow'] == 1):?>
