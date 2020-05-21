@@ -23,7 +23,7 @@ class Servers extends Model
 		$port = $ip[1];
 		
 		if ( $port == '27015' ) return $ip;
-		return $ip . $port;
+		return $ip . ':' . $port;
 	}
 
 

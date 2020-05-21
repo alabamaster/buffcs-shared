@@ -21,6 +21,11 @@ function discount($cost, $discount)
 	$a = $cost / 100 * $discount;
 	return $cost - $a;
 }
+function serverIp($ip, $port)
+{
+	if ( $port == '27015' ) return $ip;
+	return $ip . ':' . $port;
+}
 
 $case = (int) $_POST['case'];
 
@@ -124,7 +129,7 @@ switch ($case) {
 					</div>
 					<div <?=$displayNone?> style="font-size: 14px;">
 						<i class="fa fa-steam" aria-hidden="true"></i> 
-						<a href="steam://connect/<?=@$info['ip']?>:<?=@$info['port']?>"><?=@$info['ip']?>:<?=@$info['port']?></a>
+						<a href="steam://connect/<?=@$info['ip']?>:<?=@$info['port']?>"><?=@serverIp(@$info['ip'], @$info['port'])?></a>
 					</div>
 					<div <?=$displayNone?> style="font-size: 14px;">
 						<i class="fa fa-users" aria-hidden="true"></i> <a href="#" data-toggle="modal" data-target="#players">Список игроков</a>

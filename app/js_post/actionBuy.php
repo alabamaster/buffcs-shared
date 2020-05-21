@@ -29,7 +29,7 @@ function serverIp($ip, $port)
 	// $ip = (string)$ip;
 	// $port = (string)$port;
 	if ( $port == '27015' ) return $ip;
-	return $ip . $port;
+	return $ip . ':' . $port;
 }
 
 function secToStrDate($secs)
