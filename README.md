@@ -12,7 +12,7 @@
 - **/usr/bin/wget --no-check-certificate -O - -q -t 1 https://site.ru/cron**
 6. не удаляйте файл unknown.png
 7. на папку icons права 777
-8. Видео как создать страницу (скоро)
+8. Видео как создать страницу https://www.youtube.com/watch?v=RaotL9pQAQk
 
 #### МЕТОДЫ ДЛЯ КАСС
 
