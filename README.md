@@ -6,7 +6,7 @@
 #### ИНСТРУКЦИЯ
 1. файлы закинуть в корень сайта(там где обычно index.php или index.html)
 2. импортировать sql.sql в базу данных csbans
-3. в тиблицу amx_admins_servers добавить 3 поля как на скрине https://prnt.sc/s82w13
+3. в тиблицу amx_admins_servers добавить 3 поля как на скрине https://prnt.sc/s82w13, и в таблицу amx_amxadmins добавить 1 поле как на скрине https://prnt.sc/sqcyam
 4. настройки в app/configs/main.php и в db.php
 5. настроить крон на выполнение раз в сутки(0 0 * * *) команда: 
 - **/usr/bin/wget --no-check-certificate -O - -q -t 1 https://site.ru/cron**
