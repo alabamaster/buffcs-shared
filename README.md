@@ -6,13 +6,15 @@
 #### ИНСТРУКЦИЯ
 1. файлы закинуть в корень сайта(там где обычно index.php или index.html)
 2. импортировать sql.sql в базу данных csbans
-3. в тиблицу amx_admins_servers добавить 3 поля как на скрине https://prnt.sc/s82w13, и в таблицу amx_amxadmins добавить 1 поле как на скрине https://prnt.sc/sqcyam
-4. настройки в app/configs/main.php и в db.php
-5. настроить крон на выполнение раз в сутки(0 0 * * *) команда: 
+3. в тиблицу amx_admins_servers добавить 3 поля как на скрине https://prnt.sc/s82w13
+4. в таблицу amx_amxadmins добавить 1 поле как на скрине https://prnt.sc/sqcyam
+5. в таблице amx_admins_servers изменить поле custom_flags как на скрине https://prnt.sc/sqq6ub
+6. настройки в app/configs/main.php и в db.php
+7. настроить крон на выполнение раз в сутки(0 0 * * *) команда: 
 - **/usr/bin/wget --no-check-certificate -O - -q -t 1 https://site.ru/cron**
-6. не удаляйте файл unknown.png
-7. на папку icons права 777
-8. Видео как создать страницу https://www.youtube.com/watch?v=RaotL9pQAQk
+8. не удаляйте файл unknown.png
+9. на папку icons права 777
+10. Видео как создать страницу https://www.youtube.com/watch?v=RaotL9pQAQk
 
 #### МЕТОДЫ ДЛЯ КАСС
 
