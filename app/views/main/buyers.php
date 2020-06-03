@@ -96,12 +96,23 @@ use app\lib\DB;
 													<div class="mess mess-error text-wrap text-center">Будьте внимательны при изменение данных!</div>
 													<div class="info">
 														<div class="row mb-1 border-bottom pb-2 pt-3 align-items-center">
-															<div class="col-3">#ID</div>
-															<div class="col-9"><?=$row['id']?></div>
+															<div class="col-md-8 border-right">
+																<div class="row">
+																	<div class="col-md-3">#ID</div>
+																	<div class="col-md-9"><?=$row['id']?></div>
+																</div>
+															</div>
+															<div class="col-md-4">
+																<!-- <label><input type="checkbox" name="userOff" checked /> Выключить</label> -->
+																<div class="custom-control custom-checkbox">
+																	<input disabled="" type="checkbox" class="custom-control-input" id="userOff_<?=$row['id']?>" name="userOff_<?=$row['id']?>">
+																	<label class="custom-control-label" for="userOff_<?=$row['id']?>">Выключить</label>
+																</div>
+															</div>
 														</div>
 														<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
-															<div class="col-3">Показывать</div>
-															<div class="col-9">
+															<div class="col-md-3">Показывать</div>
+															<div class="col-md-9">
 																<select name="show" class="form-control form-control-sm">
 																	<?php if($row['ashow'] == 1):?>
 																		<option value="0">Скрыть</option>
@@ -114,32 +125,32 @@ use app\lib\DB;
 															</div>
 														</div>
 														<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
-															<div class="col-3">Ник</div>
-															<div class="col-9"><input class="form-control form-control-sm" type="text" name="nickname" value="<?=htmlspecialchars($row['nickname'])?>"></div>
+															<div class="col-md-3">Ник</div>
+															<div class="col-md-9"><input class="form-control form-control-sm" type="text" name="nickname" value="<?=htmlspecialchars($row['nickname'])?>"></div>
 														</div>
 														<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
-															<div class="col-3">SteamID</div>
-															<div class="col-9"><input class="form-control form-control-sm" type="text" name="steamid" value="<?=htmlspecialchars($row['steamid'])?>"></div>
+															<div class="col-md-3">SteamID</div>
+															<div class="col-md-9"><input class="form-control form-control-sm" type="text" name="steamid" value="<?=htmlspecialchars($row['steamid'])?>"></div>
 														</div>
 														<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
-															<div class="col-3">Сервер</div>
-															<div class="col-9"><?=$main->getServerNameById($row['server_id'])?></div>
+															<div class="col-md-3">Сервер</div>
+															<div class="col-md-9"><?=$main->getServerNameById($row['server_id'])?></div>
 														</div>
 														<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
-															<div class="col-3">Привилегия</div>
-															<div class="col-9"><?=$main->getPrivilegeNameById($row['tarif_id'])?></div>
+															<div class="col-md-3">Привилегия</div>
+															<div class="col-md-9"><?=$main->getPrivilegeNameById($row['tarif_id'])?></div>
 														</div>
 														<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
-															<div class="col-3">Email</div>
-															<div class="col-9"><input class="form-control form-control-sm" type="text" name="email" value="<?=htmlspecialchars($row['email'])?>"></div>
+															<div class="col-md-3">Email</div>
+															<div class="col-md-9"><input class="form-control form-control-sm" type="text" name="email" value="<?=htmlspecialchars($row['email'])?>"></div>
 														</div>
 														<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
-															<div class="col-3">VK</div>
-															<div class="col-9"><input class="form-control form-control-sm" type="text" name="vk" value="<?=htmlspecialchars($row['vk'])?>"></div>
+															<div class="col-md-3">VK</div>
+															<div class="col-md-9"><input class="form-control form-control-sm" type="text" name="vk" value="<?=htmlspecialchars($row['vk'])?>"></div>
 														</div>
 														<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
-															<div class="col-3">Тип</div>
-															<div class="col-9">
+															<div class="col-md-3">Тип</div>
+															<div class="col-md-9">
 																<?php if($row['flags'] == 'a'):?>
 																	<select name="type" class="form-control form-control-sm">
 																		<option value="a" selected="">Ник + пароль</option>
@@ -154,8 +165,8 @@ use app\lib\DB;
 															</div>
 														</div>
 														<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
-															<div class="col-3">Сервер</div>
-															<div class="col-9">
+															<div class="col-md-3">Сервер</div>
+															<div class="col-md-9">
 																<select name="server" class="form-control form-control-sm">
 																	<?php foreach ( $allServers as $s_val ):?>
 																		<?php if ( $s_val['id'] == $row['server_id'] ):?>
@@ -167,9 +178,9 @@ use app\lib\DB;
 																</select>
 															</div>
 														</div>
-														<div class="row mb-1 pb-0 pt-1 align-items-center">
-															<div class="col-3">Привилегия</div>
-															<div class="col-9">
+														<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
+															<div class="col-md-3">Привилегия</div>
+															<div class="col-md-9">
 																<?php $sql=DB::run('SELECT `name` FROM `ez_privileges` WHERE `id` = ?', [$row['tarif_id']])->fetch(PDO::FETCH_ASSOC);?>
 																
 																<select name="privilege" class="form-control form-control-sm">
@@ -184,7 +195,6 @@ use app\lib\DB;
 																		<?php endif;?>
 																	<?php endforeach;?>
 																</select>
-
 															</div>
 														</div>
 													</div>

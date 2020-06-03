@@ -118,6 +118,10 @@ class Robokassa extends Model
 				$ashow = 1;
 				$static_ban = 'no';
 
+				$reloadAdminsStatus = null;
+				$sendMailStatus = false;
+				$arrException = [];
+
 				$username 	= ($arr['type'] == 'a') ? $arr['nickname'] : $arr['steamid'];
 				$steamid 	= ($arr['type'] == 'a') ? $arr['nickname'] : $arr['steamid'];
 				$nickname 	= ($arr['type'] == 'a') ? $arr['nickname'] : $arr['steamid'];
@@ -131,6 +135,8 @@ class Robokassa extends Model
 						`ashow`, `days`, `tarif_id`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 					', [ $username, $steamid, $nickname, $arr['pass_md5'], $arr['access'], $arr['type'], $this->time, $date_end, $ashow, $days, $arr['tariff'] ]);
 
+					$lastInsertId = DB::lastInsertId();
+
 					DB::run('INSERT INTO `'.$this->DB['prefix'].'_admins_servers` (`admin_id`, `server_id`, `custom_flags`, `use_static_bantime`, `email`, `vk`) VALUES (LAST_INSERT_ID(), ?, NULL, ?, ?, ?)', [ $arr['server'], $static_ban, $arr['email'], $arr['vk'] ]);
 					
 					// update promo logs
@@ -143,14 +149,26 @@ class Robokassa extends Model
 					echo 'Error: ' . $e->getMessage();
 				}
 
-				// отправка почты
-				$this->MAILER->newPaySuccessMessage($pay_id);
-
-				// отправка amx_reloadadmins
-				if ( Config::get('RELOADADMINS') == 1 ) {
-					if ( !$this->MERCHANT->reloadAdmins($arr['server']) ) {
-						echo $this->MERCHANT->error;
+				// reload admins
+				if ( Config::get('RELOADADMINS') == 1 ) 
+				{
+					if ( !$this->MERCHANT->reloadAdmins($arr['server']) ) 
+					{
+						$reloadAdminsStatus = false;
+						$arrException[] = $this->MERCHANT->error;
+					} else {
+						$reloadAdminsStatus = true;
 					}
+				}
+
+				// отправка почты
+				if ( $this->MAILER->newPaySuccessMessage($pay_id) ) {
+					$sendMailStatus = true;
+				}
+
+				// лог
+				if ( !$this->MERCHANT->createBuyLog($this->time, $lastInsertId, $arr['server'], $reloadAdminsStatus, $sendMailStatus, $arrException) ) {
+					die('function createBuyLog: error');
 				}
 			break;
 		}

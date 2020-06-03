@@ -1,6 +1,8 @@
 <?php 
 namespace app\merchantModels;
 
+ini_set('display_errors', 1);
+
 require_once 'app/models/Sendmailer.php';
 
 use app\core\Model;
@@ -117,6 +119,10 @@ class Freekassa extends Model
 				$ashow = 1;
 				$static_ban = 'no';
 
+				$reloadAdminsStatus = null;
+				$sendMailStatus = false;
+				$arrException = [];
+
 				$username 	= ($arr['type'] == 'a') ? $arr['nickname'] : $arr['steamid'];
 				$steamid 	= ($arr['type'] == 'a') ? $arr['nickname'] : $arr['steamid'];
 				$nickname 	= ($arr['type'] == 'a') ? $arr['nickname'] : $arr['steamid'];
@@ -124,15 +130,16 @@ class Freekassa extends Model
 				if( $arr['type'] != 0 && $arr['type'] != 'a' && $arr['type'] != 'ac' )
 					die("Error: merchantModels / Freekassa / saveNewUser: type error\n");
 				
-				// https://tproger.ru/translations/how-to-configure-and-use-pdo/#prepared_statements
+				//https://tproger.ru/translations/how-to-configure-and-use-pdo/#prepared_statements
 				DB::beginTransaction();
 				try {
-					$lastInsertId = DB::lastInsertId();
 					DB::run("
 						INSERT INTO `{$this->DB['prefix']}_amxadmins` (
 						`username`, `steamid`, `nickname`, `password`, `access`, `flags`, `created`, `expired`, 
 						`ashow`, `days`, `tarif_id`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 					", [ $username, $steamid, $nickname, $arr['pass_md5'], $arr['access'], $arr['type'], $this->time, $date_end, $ashow, $days, $arr['tariff'] ]);
+
+					$lastInsertId = DB::lastInsertId();
 
 					DB::run("INSERT INTO `{$this->DB['prefix']}_admins_servers` (`admin_id`, `server_id`, `custom_flags`, `use_static_bantime`, `email`, `vk`) VALUES (LAST_INSERT_ID(), ?, NULL, ?, ?, ?)", [ $arr['server'], $static_ban, $arr['email'], $arr['vk'] ]);
 					
@@ -146,14 +153,26 @@ class Freekassa extends Model
 					echo 'Error: ' . $e->getMessage();
 				}
 
-				// отправка почты
-				$this->MAILER->newPaySuccessMessage($pay_id);
-
-				// отправка amx_reloadadmins
-				if ( Config::get('RELOADADMINS') == 1 ) {
-					if ( !$this->MERCHANT->reloadAdmins($arr['server']) ) {
-						echo $this->MERCHANT->error;
+				// reload admins
+				if ( Config::get('RELOADADMINS') == 1 ) 
+				{
+					if ( !$this->MERCHANT->reloadAdmins($arr['server']) ) 
+					{
+						$reloadAdminsStatus = false;
+						$arrException[] = $this->MERCHANT->error;
+					} else {
+						$reloadAdminsStatus = true;
 					}
+				}
+
+				// отправка почты
+				if ( $this->MAILER->newPaySuccessMessage($pay_id) ) {
+					$sendMailStatus = true;
+				}
+
+				// лог
+				if ( !$this->MERCHANT->createBuyLog($this->time, $lastInsertId, $arr['server'], $reloadAdminsStatus, $sendMailStatus, $arrException) ) {
+					die('function createBuyLog: error');
 				}
 			break;
 		}

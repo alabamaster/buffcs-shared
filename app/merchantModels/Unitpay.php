@@ -132,6 +132,10 @@ class UnitpayModel extends Model
 				$ashow = 1;
 				$static_ban = 'no';
 
+				$reloadAdminsStatus = null;
+				$sendMailStatus = false;
+				$arrException = [];
+
 				$username 	= ($arr['type'] == 'a') ? $arr['nickname'] : $arr['steamid'];
 				$steamid 	= ($arr['type'] == 'a') ? $arr['nickname'] : $arr['steamid'];
 				$nickname 	= ($arr['type'] == 'a') ? $arr['nickname'] : $arr['steamid'];
@@ -145,6 +149,8 @@ class UnitpayModel extends Model
 						`ashow`, `days`, `tarif_id`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 					', [ $username, $steamid, $nickname, $arr['pass_md5'], $arr['access'], $arr['type'], $this->time, $date_end, $ashow, $days, $arr['tariff'] ]);
 
+					$lastInsertId = DB::lastInsertId();
+
 					DB::run('INSERT INTO `'.$this->DB['prefix'].'_admins_servers` (`admin_id`, `server_id`, `custom_flags`, `use_static_bantime`, `email`, `vk`) VALUES (LAST_INSERT_ID(), ?, NULL, ?, ?, ?)', [ $arr['server'], $static_ban, $arr['email'], $arr['vk'] ]);
 					
 					DB::run('UPDATE `ez_promo_logs` SET `user_id` = LAST_INSERT_ID(), `was_used` = 1 WHERE `browser` = ? AND `token` = ?', 
@@ -152,19 +158,40 @@ class UnitpayModel extends Model
 					
 					DB::commit();
 				} catch (PDOException $e) {
-					// echo 'Transaction error :(';
 					DB::rollBack();
 					print $this->UnitPay->getErrorHandlerResponse('MerchantModels / Unitpay / saveNewUser: sql transaction error');
 				}
 
 				// отправка почты
-				$this->MAILER->newPaySuccessMessage($pay_id);
+				// $this->MAILER->newPaySuccessMessage($pay_id);
 
-				// отправка amx_reloadadmins
-				if ( Config::get('RELOADADMINS') == 1 ) {
-					if ( !$this->MERCHANT->reloadAdmins($arr['server']) ) {
-						print $this->UnitPay->getErrorHandlerResponse('MerchantModels / Unitpay /' . $this->MERCHANT->error);
+				// // отправка amx_reloadadmins
+				// if ( Config::get('RELOADADMINS') == 1 ) {
+				// 	if ( !$this->MERCHANT->reloadAdmins($arr['server']) ) {
+				// 		print $this->UnitPay->getErrorHandlerResponse('MerchantModels / Unitpay /' . $this->MERCHANT->error);
+				// 	}
+				// }
+
+				// reload admins
+				if ( Config::get('RELOADADMINS') == 1 ) 
+				{
+					if ( !$this->MERCHANT->reloadAdmins($arr['server']) ) 
+					{
+						$reloadAdminsStatus = false;
+						$arrException[] = $this->MERCHANT->error;
+					} else {
+						$reloadAdminsStatus = true;
 					}
+				}
+
+				// отправка почты
+				if ( $this->MAILER->newPaySuccessMessage($pay_id) ) {
+					$sendMailStatus = true;
+				}
+
+				// лог
+				if ( !$this->MERCHANT->createBuyLog($this->time, $lastInsertId, $arr['server'], $reloadAdminsStatus, $sendMailStatus, $arrException) ) {
+					print $this->UnitPay->getErrorHandlerResponse('MerchantModels / Unitpay / createBuyLog: error');
 				}
 			break;
 		}
@@ -174,7 +201,7 @@ class UnitpayModel extends Model
 	public function checkAuthPay($get, $core_id)
 	{
 		if ( $_SERVER['REQUEST_METHOD'] !== 'GET' ) {
-			die('method error');
+			print $this->UnitPay->getErrorHandlerResponse('MerchantModels / Unitpay / checkAuthPay / method error');
 		}
 
 		$params = $get['params'];
@@ -193,14 +220,12 @@ class UnitpayModel extends Model
 
 		if( $core_id != 'up_core_id=2' && $core_id != 'up_core_id=3' ) {
 			print $this->UnitPay->getErrorHandlerResponse('MerchantModels / Unitpay / checkAuthPay / error #1');
-			// echo 'Error: merchantModels / Unitpay / checkAuthPay / error #1';
 			var_dump($core_id);
 		}
 
 		$temp = DB::run('SELECT * FROM `ez_buy_logs` WHERE `id` = ? LIMIT 1', [ $pay_id[0] ] )->fetch(PDO::FETCH_ASSOC);
 		if(!$temp) {
 			print $this->UnitPay->getErrorHandlerResponse('MerchantModels / Unitpay / checkAuthPay / error #2');
-			// echo 'Error: merchantModels / Unitpay / checkAuthPay / error #2';
 		}
 
 		$temp_arr = [
@@ -222,7 +247,6 @@ class UnitpayModel extends Model
 		$info = DB::run('SELECT * FROM `ez_privileges` `t1` JOIN `ez_privileges_times` `t2` WHERE `t2`.`pid` = ? AND `t1`.`sid` = ? AND `t1`.`id` = ? AND `t2`.`time` = ? LIMIT 1', [ $temp_arr['tariff'], $temp_arr['server'], $temp_arr['tariff'], $temp_arr['days'] ])->fetch(PDO::FETCH_ASSOC);
 
 
-		// $price = ($this->DISC['active'] == 1) ? $price = Main::discount($info['price'], $this->DISC['discount']) : $price = $info['price'];
 		$price = $this->MERCHANT->resultAmountCalculate($info['price'], $info['sid'], $info['pid'], $temp_arr['browser'], $temp_arr['ip']);
 		
 		// проверка цены

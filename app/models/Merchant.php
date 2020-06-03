@@ -11,6 +11,7 @@ use app\core\Config;
 // use app\lib\SourceQuery;
 use app\lib\DB;
 use PDO;
+use Exception;
 
 use app\models\Main;
 
@@ -63,7 +64,11 @@ class Merchant extends Model
 	{
 		$query = DB::run('SELECT `address`, `rcon` FROM `'.$this->DB['prefix'].'_serverinfo` WHERE `id` = ?', [ $sid ]);
 		
-		if ( !$query->fetch() ) die('Rcon not found for server where id: ' . $sid);
+		if ( !$query->fetch() || empty($query->fetch()) ) {
+			// die('Rcon not found for server where id: ' . $sid);
+			$this->error = 'Error (Incorrect Rcon password)';
+			return false;
+		}
 
 		try {
 			$cs_server = $query->fetch(PDO::FETCH_ASSOC);
@@ -77,16 +82,15 @@ class Merchant extends Model
 			$this->SQUERY->Rcon($cmd);
 			$this->SQUERY->Disconnect();
 		} catch (Exception $e) {
-			echo 'Error: ' . $e->getMessage();
+			// echo 'Error: ' . $e->getMessage();
+			$this->error = 'Error(' . $e->getMessage() . ')';
+			return false;
 		}
 		return true;
 	}
 
 	public function resultAmountCalculate($price, $sid, $pid, $browser, $token)
 	{
-		// $token = $_SERVER['REMOTE_ADDR'];
-		// $browser = substr($_SERVER['HTTP_USER_AGENT'], 0, 99);
-
 		$sql = DB::run('SELECT * FROM `ez_promo_logs` WHERE `browser` = ? AND `token` = ? AND `sid` = ? AND `pid` = ?', 
 			[ $browser, $token, $sid, $pid ])->fetch(PDO::FETCH_ASSOC);
 
@@ -95,9 +99,38 @@ class Merchant extends Model
 		if ( $sql )
 		{
 			$amount_promo = $amount - (($amount / 100) * $sql['discount']);
-			// echo "Цена до всех обработок: {$price}. \nЦена после глобальной скидки: {$amount}. \nЦена после промокода: {$amount_promo}\n";
 			return $amount_promo;
 		}
 		return $amount;
+	}
+
+	public function createBuyLog($Time, $userID, $serverID, $reload_admin = null, $mailStatus, $arrException)
+	{
+		$logDate = date('d.m.Y H:i', $Time);
+		$mailStatus = ( $mailStatus === true ) ? 'ok' : 'error';
+		$logFile = $_SERVER['DOCUMENT_ROOT'] . '/log.txt';
+
+		if ( !file_exists($logFile) ) {
+			echo "Error: file $logFile not exist\n";
+			return false;
+		}
+		if ( !is_writable($logFile) ) {
+			echo "Error: file $logFile not writeable! Set file permissions 0777\n";
+			return false;
+		}
+
+		if ( $reload_admin === null ) {
+			$reload_admin = 'off';
+		} else {
+			$reload_admin = ( empty($arrException) ) ? 'ok' : array_shift($arrException);
+		}
+
+		try {
+			$log  = "Date created: $logDate / user ID: $userID / server ID: $serverID / amx_reloadadmins: $reload_admin / Mail status: $mailStatus \n";
+			file_put_contents($logFile, $log, FILE_APPEND);
+		} catch (Exception $e) {
+			echo 'Error: ' . $e->getMessage();
+		}
+		return true;
 	}
 }
