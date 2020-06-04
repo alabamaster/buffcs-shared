@@ -88,7 +88,7 @@ class MerchantController extends Controller
 		}
 
 		$get_core_id = explode('.', $_GET['params']['account']); // [0] - pay_id // [1] - core_id
-		$core_id = 'up_core_id=' . $get_core_id[1];
+		@$core_id = 'up_core_id=' . $get_core_id[1]; // @ фикс для тестового запроса на гребаном сайте гребаного юнитпеи
 
 		if ( isset($up_core_id) ) die('core id not found');
 
@@ -108,7 +108,7 @@ class MerchantController extends Controller
 				// Method Pay means that the money received
 				case 'pay':
 					// Please complete order
-					switch ( $get_core_id[1] )
+					switch ( @$get_core_id[1] ) // @ фикс для тестового запроса на гребаном сайте гребаного юнитпеи
 					{
 						case 1: // обычная покупка
 							$this->UP->checkPay($_GET, $core_id);
@@ -142,5 +142,40 @@ class MerchantController extends Controller
 		} catch (Exception $e) {
 			print $unitPay->getErrorHandlerResponse($e->getMessage());
 		}
+	}
+
+	public function interkassaAction()
+	{
+		die('ok');
+		if ( !isset($_POST['us_core_id']) ) die('core id not found');
+
+		switch ( $_POST['us_core_id'] ) 
+		{
+			case '1': // обычная покупка
+				$this->FK->checkPay($_POST);
+			break;
+
+			case '2': // покупа авторизованного юзера
+				$this->FK->checkAuthPay($_POST);
+			break;
+
+			case '3': // продление авторизованного юзера
+				$this->FK->checkAuthPay($_POST);
+			break;
+		}
+	}
+
+	public function webmoneyAction()
+	{
+		die('this webmoney action');
+	}
+
+	public function qiwiAction()
+	{
+		die('this qiwi action');
+	}
+	public function yandexmoneyAction()
+	{
+		die('this yandexmoney action');
 	}
 }
