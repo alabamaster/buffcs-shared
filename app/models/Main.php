@@ -205,7 +205,10 @@ class Main extends Model
 
 		// check privilege
 		if ( $post['privilege'] != $sql['tarif_id'] ) {
-			DB::run('UPDATE `'.$this->DB['prefix'].'_amxadmins` SET `tarif_id` = ? WHERE `id` = ?', [ $post['privilege'], $post['user_id'] ]);
+			$queryPriv = DB::run('SELECT `access` FROM `ez_privileges` WHERE `id` = ?', [ $post['privilege'] ])->fetch(PDO::FETCH_ASSOC);
+			
+			DB::run("UPDATE `{$this->DB['prefix']}_amxadmins` SET `access` = ? WHERE `id` = ?", [ $queryPriv['access'], $post['user_id'] ]);
+			DB::run("UPDATE `{$this->DB['prefix']}_amxadmins` SET `tarif_id` = ? WHERE `id` = ?", [ $post['privilege'], $post['user_id'] ]);
 		}
 
 		return true;

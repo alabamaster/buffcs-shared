@@ -2,15 +2,56 @@
 	<div class="row">
 		<div class="col-md-12">
 			<div class="box">
-				<?php if ($model->checkUserIP($_SERVER["REMOTE_ADDR"])['exist'] == true) : ?>
-					<div class="mess mess-error text-center font-weight-bold">
-						Вы забанены, посмотреть <a href="<?= $this->SITE_URL ?>bans/ban<?= $model->checkUserIP($_SERVER["REMOTE_ADDR"])['bid'] ?>">подробнее</a>
-					</div>
+				<?php if ($model->checkUserIP($_SERVER["REMOTE_ADDR"])['exist'] === true) : ?>
+				<div class="mess mess-error text-center font-weight-bold">
+					Вы забанены, посмотреть <a href="<?= $this->SITE_URL ?>bans/ban<?= $model->checkUserIP($_SERVER["REMOTE_ADDR"])['bid'] ?>">подробнее</a>
+				</div>
 				<?php endif; ?>
-				
+
+				<form action="#">
+					<div class="row">
+						<div class="col-md-6">
+							<div class="form-group">
+								<div class="row">
+									<div class="col-lg-4">
+										<button type="button" class="fc-button fc-button-blue" id="clearFilter">Сбросить фильтр</button>
+									</div>
+									<div class="col-lg-8">
+										<select class="form-control form-control-sm" id="server">
+											<option selected="" disabled="">Фильтр по серверам</option>
+											<?php foreach ($allServers as $row):?>
+											<option value="<?=$row['id']?>"><?=$row['hostname']?></option>
+											<?php endforeach;?>
+										</select>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<form action="#" method="GET">
+									<div class="row">
+										<div class="col-lg-9">
+											<input type="text" id="search" class="form-control form-control-sm" placeholder="Ник / SteamID">
+										</div>
+										<div class="col-lg-3">
+											<button type="button" id="goSearch" class="fc-button fc-button-blue">Поиск</button>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</form>
+
+				<?php if ( isset($_GET['search']) ):?>
+					<div style="background-color:#e4efff;border-left:4px solid #50adff;padding: 4px 4px 4px 15px;color:#505050;font-size:13px;">
+						<span>Поиск по запросу: <b><?=htmlspecialchars($_GET['search'])?></b>, совпадений: <b><?=$dataTotalRows?></b></span>
+					</div>
+				<?php endif;?>
+
 				<div class="table-responsive">
-					<h6 class="text-center text-muted d-block mb-0" id="loading">Идёт загрузка ...</h6>
-					<table class="table table-hover d-none" style="font-size: 14px" id="table-data-bans">
+					<table class="table table-hover" style="font-size: 14px">
 						<thead>
 							<tr>
 								<th class="nosort border-0">Игрок</th>
@@ -24,82 +65,105 @@
 							</tr>
 						</thead>
 						<tbody>
-							<?php foreach ($allBans as $row) : ?>
-								<tr>
-									<td>
-										<div class="row">
-											<div class="col text-truncate" style="max-width: 200px;">
-												<a href="<?= $this->SITE_URL ?>bans/ban<?= $row['bid'] ?>"><?= htmlspecialchars($row['player_nick']) ?></a>
-											</div>
+							<?php foreach ($data as $row):?>
+							<tr>
+								<td>
+									<div class="row">
+										<div class="col text-truncate" style="max-width: 200px;">
+											<a href="<?= $this->SITE_URL ?>bans/ban<?= $row['bid'] ?>"><?= htmlspecialchars($row['player_nick']) ?></a>
 										</div>
-									</td>
-									<td>
-										<div class="row">
-											<div class="col text-truncate" style="max-width: 250px;"><?=htmlspecialchars($row['admin_nick'])?></div>
-										</div>
-									</td>
-									<?php if( $count_serv > 1 ){
-									echo '
-									<td>
-										<div class="row">
-											<div class="col text-truncate" style="max-width: 250px;">'.$SERVERS->getServerNameByIp($row['server_ip']).'</div>
-										</div>
-									</td>';
-									}?>
-									<td>
-										<div class="row"><div class="col text-truncate" style="max-width: 200px;"><?=$row['ban_reason']?></div>
-										</div>
-									</td>
-									<td>
-										<div class="row"><div class="col text-truncate"><?=date('d.m.Y в H:i', $row['ban_created'])?></div>
-										</div>
-									</td>
-									<td><?=$model->bansExpiredCalc($row['ban_created'], $row['expired'], $row['ban_length'], false)?></td>
-								</tr>
-								<?php endforeach; ?>
+									</div>
+								</td>
+								<td>
+									<div class="row">
+										<div class="col text-truncate" style="max-width: 250px;"><?=htmlspecialchars($row['admin_nick'])?></div>
+									</div>
+								</td>
+								<?php if( $count_serv > 1 ):?>
+								<td><?=$SERVERS->getServerNameByIp($row['server_ip']);?></td>
+								<?php endif;?>
+								<td>
+									<div class="row">
+										<div class="col text-truncate" style="max-width: 200px;"><?=$row['ban_reason']?></div>
+									</div>
+								</td>
+								<td><?=date('d.m.Y в H:i', $row['ban_created'])?></td>
+								<td><?=$model->bansExpiredCalc($row['ban_created'], $row['expired'], $row['ban_length'], false)?></td>
+							</tr>
+						<?php endforeach;?>
 						</tbody>
 					</table>
+				</div>
+				<div class="row align-items-center">
+					<div class="col-md-9">
+						<?=$paginator?>
+					</div>
+					<div class="col-md-3 d-flex justify-content-end">
+						<span>Всего записей: <?=$dataTotalRows;?></span>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
 <script>
-$(document).ready(function() {
-	$('#table-data-bans').on('init.dt',function() {
-		$("#table-data-bans").removeClass('d-none').show();
-		$('#loading').remove();
+	const selectServer 	= document.querySelector('#server');
+	const inputSearch 	= document.querySelector('#search');
+	// const server 		= getParameterByName('server');
+	// const search 		= getParameterByName('search');
+	const clearFilter 	= document.querySelector('#clearFilter');
+	const btnSearch 	= document.querySelector('#goSearch');
+	const mainUrl = <?php echo json_encode($this->SITE_URL)?>;
+
+	selectServer.addEventListener('change', (e) => {
+		let searchParams = new URLSearchParams(window.location.search);
+
+		if ( server === null ) {
+			searchParams.append('server', e.target.value);
+			let newParams = searchParams.toString();
+			window.location.href = '?' + newParams;
+		} else {
+			searchParams.set('server', e.target.value);
+			searchParams.set('page', 1);
+			let newParams = searchParams.toString();
+			window.location.href = '?' + newParams;
+		}
 	});
 
-	setTimeout(function(){
-		$('#table-data-bans').DataTable({
-			columnDefs: [{
-				targets: 'nosort',
-				orderable: false
-			}],
-			"aaSorting": [],
-			"processing": true,
-			"language": {
-				"lengthMenu":		"Показать _MENU_ записей",
-				"emptyTable":		"Данные отсутствуют в таблице",
-				"info":				"Показано с _START_ по _END_ из _TOTAL_ записей",
-				"infoFiltered":		"(фильтрация из _MAX_ записей)",
-				"infoEmpty":		"Нет записей",
-				"loadingRecords": 	"Loading...",
-				"processing":		"Processing...",
-				"search":			"Поиск",
-				"zeroRecords":		"Не найдено подходящих записей",
-				"paginate": {
-					"first":		"Первая",
-					"last":			"Последняя",
-					"next":			"Следующая",
-					"previous":		"Предыдущая"
-				},
-			},
-			drawCallback: function () {
-				$('#dtPluginExample_paginate ul.pagination').addClass("pagination-sm");
-			},
-		});
-	}, 3000);
-});
+	function getParameterByName(name) {
+		var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+		return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+	}
+
+	btnSearch.addEventListener('click', () => {
+		const search = document.querySelector('#searchInput');;
+
+		if ( inputSearch.value.length < 3 || inputSearch.value.length > 20 ) {
+			inputSearch.classList.add('is-invalid');
+			return false;
+		} else {
+			inputSearch.classList.remove('is-invalid');
+			inputSearch.classList.add('is-valid');
+		}
+
+		if ( getParameterByName('search') !== null ) // в юрл уже есть поиск
+		{
+			const urlPage 	= mainUrl + 'bans?page=1&';
+			const urlEdit 	= urlPage.split( '?' )[0]; // очищаем юрл от параметров ?...
+			const urlNew 	= `${urlEdit}?search=${inputSearch.value}`; // добавляем сервер в юрл
+			// console.log(urlPage, urlEdit, urlNew);
+			window.location.href = urlNew; // редирект
+		} else { // в юрл еще нет сервер ид
+			const urlStart 	= mainUrl + 'bans?page=1';
+			const urlEdit 	= urlStart.split( '?' )[0];
+			const urlNew 	= `${urlEdit}?search=${inputSearch.value}`
+			// console.log(urlStart, urlEdit, urlNew);
+			window.location.href = urlNew; // редирект
+		}
+	});
+
+	clearFilter.addEventListener('click', () => {
+		window.location.href = window.location.origin + '/bans?page=1';
+	});
+
 </script>

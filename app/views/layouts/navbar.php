@@ -13,7 +13,7 @@
 				<a class="n-link" href="<?=$this->SITE_URL?>buyers"><i class="fa fa-user-o"></i> Покупатели</a>
 			</li>
 			<li class="nav-item">
-				<a class="n-link" href="<?=$this->SITE_URL?>bans"><i class="fa fa-wheelchair"></i> Банлист</a>
+				<a class="n-link" href="<?=$this->SITE_URL?>bans?page=1"><i class="fa fa-wheelchair"></i> Банлист</a>
 			</li>
 			<li class="nav-item">
 				<a class="n-link" href="<?=$this->SITE_URL?>account/login"><i class="fa fa-home"></i> Личный кабинет</a>

@@ -57,7 +57,7 @@ class Bans extends Model
 
 	public function getAllBans()
 	{
-		$sql = DB::run('SELECT * FROM `'.$this->DB['prefix'].'_bans` ORDER BY `bid` DESC')->fetchAll();
+		$sql = DB::run('SELECT * FROM `'.$this->DB['prefix'].'_bans` ORDER BY `bid` DESC LIMIT 20')->fetchAll();
 		return $sql;
 	}
 
@@ -123,30 +123,115 @@ class Bans extends Model
 		}
 	}
 
-	public function bansCount()
+	public function getData($get, $start, $perPage)
 	{
-		return DB::run('SELECT COUNT(bid) FROM `'.$this->DB['prefix'].'_bans`')->fetchColumn();
+		$start = htmlspecialchars($start);
+		$perPage = htmlspecialchars($perPage);
+
+		if ( isset($get['server']) && $get['server'] != '' ) 
+		{
+			$SERVERS = new Servers;
+			$serverId = (int)$get['server'];
+			$serverIp = $SERVERS->getServerIpById($serverId);
+
+			$search = ( isset($get['search']) ) ? "AND `player_nick` LIKE '%{$get['search']}%' OR `admin_nick` LIKE '%{$get['search']}%'" : '';
+			$answer = DB::run("
+				SELECT * FROM `{$this->DB['prefix']}_bans` 
+				WHERE `server_ip` = ? {$search} 
+				ORDER BY `bid` DESC LIMIT $start, $perPage", [ $serverIp ]);
+			
+			$total = $answer->rowCount();
+
+			return ['answer' => $answer->fetchAll(), 'total' => $total];
+		}
+
+		$search = ( isset($get['search']) ) ? "WHERE `player_nick` LIKE '%{$get['search']}%' OR `admin_nick` LIKE '%{$get['search']}%'" : '';
+		$answer = DB::run("SELECT * FROM `{$this->DB['prefix']}_bans` {$search} ORDER BY `bid` DESC LIMIT $start, $perPage");
+		$total = $answer->rowCount();
+
+		return ['answer' => $answer->fetchAll(), 'total' => $total];
 	}
 
-	public function listBans($route)
+	public function getTotalForPaginator($get)
 	{
-		// $pagination = new Pagination($this->route, $this->model->bansCount(), 20);
-		// 20 должны быть равные
-		$max = 15;
+		if ( isset($get['server']) && $get['server'] != '' ) 
+		{
+			$SERVERS = new Servers;
+			$serverId = (int)$get['server'];
+			$serverIp = $SERVERS->getServerIpById($serverId);
 
-		if ( empty($route['page']) ) {
-			$start = 1;
-		} else {
-			$page 	= explode('/', $route['page']);
-			$page 	= (int)$page[1];
-			$start 	= (($page - 1) * $max);
+			$search = ( isset($get['search']) ) ? "AND `player_nick` LIKE '%{$get['search']}%' OR `admin_nick` LIKE '%{$get['search']}%'" : '';
+			$answer = DB::run("SELECT * FROM `{$this->DB['prefix']}_bans` WHERE `server_ip` = ? {$search} ORDER BY `bid` DESC", [ $serverIp ]);
+			$total = $answer->rowCount();
 		}
 
-		try {
-			$sql = DB::run("SELECT * FROM `{$this->DB['prefix']}_bans` ORDER BY `bid` DESC LIMIT {$start}, {$max}")->fetchAll();
-		} catch (Exception $e) {
-			echo 'Error: ' . $e->getMessage();
+		$search = ( isset($get['search']) ) ? "WHERE `player_nick` LIKE '%{$get['search']}%' OR `admin_nick` LIKE '%{$get['search']}%'" : '';
+		$answer = DB::run("SELECT * FROM `{$this->DB['prefix']}_bans` {$search} ORDER BY `bid` DESC");
+		$total = $answer->rowCount();
+
+		return (int)$total;
+	}
+
+	public function sqlRequest($get, $page, $perPage)
+	{
+		$start = ( $page - 1 ) * $perPage;
+		$orderSQL = 'ORDER BY `bid` DESC';
+		
+		$search = ( isset($get['search']) ) ? '%' . $get['search'] . '%' : false;
+
+		if ( isset($get['server']) ) {
+			$SERVERS = new Servers;
+			$serverID = (int)$get['server'];
+			$serverIP = $SERVERS->getServerIpById($serverID);
 		}
-		return $sql;
+
+		if ( isset($get['server']) && $search === false ) { // только сервер
+			$querySQL = DB::run("
+				SELECT * FROM `{$this->DB['prefix']}_bans` 
+				WHERE `server_ip` = ? $orderSQL LIMIT $start, $perPage
+			", [ $serverIP ]);
+			
+			$totalSQL = DB::run("SELECT * FROM `{$this->DB['prefix']}_bans` WHERE `server_ip` = ? $orderSQL", [ $serverIP ]);
+			$a = 1;
+		}
+
+		if ( !isset($get['server']) && $search !== false ) { // только поиск
+			$querySQL = DB::run("
+				SELECT * FROM `{$this->DB['prefix']}_bans` 
+				WHERE `player_ip` LIKE ? 
+				OR`player_id` LIKE ? 
+				OR `player_nick` LIKE ? $orderSQL LIMIT $start, $perPage
+			", [ $search, $search, $search ]);
+			
+			$totalSQL = DB::run("
+				SELECT * FROM `{$this->DB['prefix']}_bans` 
+				WHERE `player_ip` LIKE ? 
+				OR`player_id` LIKE ? 
+				OR `player_nick` LIKE ? $orderSQL
+			", [ $search, $search, $search ]);
+			$a = 2;
+		}
+
+		if ( isset($get['server']) && $search !== false ) { // сервер и поиск
+			$querySQL = DB::run("
+				SELECT * FROM `{$this->DB['prefix']}_bans` 
+				WHERE `server_ip` = ? AND (`player_ip` LIKE ? OR `player_id` LIKE ? OR `player_nick` LIKE ?) $orderSQL LIMIT $start, $perPage
+			", [ $serverIP, $search, $search, $search ]);
+			
+			$totalSQL = DB::run("
+				SELECT * FROM `{$this->DB['prefix']}_bans` 
+				WHERE `server_ip` = ? AND (`player_ip` LIKE ? OR `player_id` LIKE ? OR `player_nick` LIKE ?) $orderSQL
+			", [ $serverIP, $search, $search, $search ]);
+			$a = 3;
+		}
+
+		if ( !isset($querySQL) ) {
+			$querySQL = DB::run("SELECT * FROM `{$this->DB['prefix']}_bans` $orderSQL LIMIT $start, $perPage");
+			$totalSQL = DB::run("SELECT * FROM `{$this->DB['prefix']}_bans` $orderSQL");
+			$a = 4;
+		}
+		// var_dump($a);
+
+		return ['sql' => $querySQL, 'total' => $totalSQL->rowCount(), 'start' => $start];
 	}
 }

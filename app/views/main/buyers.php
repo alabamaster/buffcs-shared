@@ -8,26 +8,69 @@ use app\lib\DB;
 	<div class="row">
 		<div class="col-md-12">
 			<div class="box">
-				<div class="table-responsive">
-					<table class="table table-hover" id="table-data-buyers">
+				
+				<!-- filter -->
+				<form>
+					<div class="row px-3">
+						<div class="col-lg-6">
+							<div class="form-group">
+								<div class="row align-items-center">
+									<div class="col-md-4">
+										<button class="fc-button fc-button-blue w-100" id="clearFilter">Сбросить фильтр</button>
+									</div>
+									<div class="col-md-8">
+										<select class="form-control form-control-sm" id="filterServer">
+											<option disabled="" selected="">Фильтр по серверам</option>
+											<?php foreach ($allServers as $row):?>
+												<option value="<?=$row['id']?>"><?=$row['hostname']?></option>
+											<?php endforeach;?>
+										</select>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-lg-6">
+							<div class="form-group">
+								<div class="row align-items-center">
+									<div class="col-md-10">
+										<input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Поиск: Ник / SteamID">
+									</div>
+									<div class="col-md-2">
+										<button type="button" id="goSearch" class="fc-button fc-button-blue">Поиск</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+				<!-- filter //-->
+
+				<?php if ( isset($_GET['search']) ):?>
+					<div style="background-color:#e4efff;border-left:4px solid #50adff;padding: 4px 4px 4px 15px;color:#505050;font-size:13px;">
+						<span>Поиск по запросу: <b><?=htmlspecialchars($_GET['search'])?></b>, совпадений: <b><?=$pagination['countRows']?></b></span>
+					</div>
+				<?php endif;?>
+
+				<div class="table-responsive <?php if($pagination['countRows'] == 0) echo 'd-none';?>">
+					<table class="table table-hover">
 						<thead>
 							<tr>
-							<?php if(Config::get('ICONS') == 1):?>
-								<th class="nosort text-center border-0 d-flex justify-content-center"><i class="fa fa-info"></i></th>
+							<?php if( Config::get('ICONS') == 1 ):?>
+								<th class="text-center border-0 d-flex justify-content-center"><i class="fa fa-info"></i></th>
 							<?php endif;?>
-								<th class="nosort border-0">Ник игрока</th>
+								<th class="border-0">Ник игрока</th>
 							<?php if( $main->getCountServers() > 1 ):?>
 								<th class="border-0">Сервер</th>
 							<?php endif;?>
 								<th class="border-0">Привилегия</th>
-								<th class="nosort border-0">Начало</th>
-								<th class="nosort border-0">Окончание</th>
-								<th class="nosort border-0"><i class="fa fa-vk"></i></th>
+								<th class="border-0">Начало</th>
+								<th class="border-0">Окончание</th>
+								<th class="border-0"><i class="fa fa-vk"></i></th>
 							</tr>
 						</thead>
 						<tbody class="tr-hover-effect">
 						<?php 
-							foreach ($buyers as $row):
+							foreach (/*$buyers*/$pagination['answer'] as $row):
 								$expired = ($row['expired'] == 0) ? 'Никогда' : date('d.m.Y', $row['expired']);
 								$tarif = ($row['tarif_id'] == null || $row['tarif_id'] == 0) ? 'Unknown' : $main->getPrivilegeNameById($row['tarif_id']);
 								$bgred = ($row['expired'] < time() && $row['expired'] != 0) ? 'style="background-color: #fff9eb"' : '';
@@ -96,18 +139,19 @@ use app\lib\DB;
 													<div class="mess mess-error text-wrap text-center">Будьте внимательны при изменение данных!</div>
 													<div class="info">
 														<div class="row mb-1 border-bottom pb-2 pt-3 align-items-center">
-															<div class="col-md-8 border-right">
+															<div class="col-md-9 border-right">
 																<div class="row">
 																	<div class="col-md-3">#ID</div>
 																	<div class="col-md-9"><?=$row['id']?></div>
 																</div>
 															</div>
-															<div class="col-md-4">
+															<div class="col-md-3">
 																<!-- <label><input type="checkbox" name="userOff" checked /> Выключить</label> -->
-																<div class="custom-control custom-checkbox">
-																	<input disabled="" type="checkbox" class="custom-control-input" id="userOff_<?=$row['id']?>" name="userOff_<?=$row['id']?>">
-																	<label class="custom-control-label" for="userOff_<?=$row['id']?>">Выключить</label>
-																</div>
+																<!-- <div class="custom-control custom-checkbox"> -->
+																	<!-- <input disabled="" type="checkbox" class="custom-control-input" id="userOff_<?php //echo $row['id']?>" name="userOff_<?php //echo $row['id']?>">
+																	<label class="custom-control-label" for="userOff_<?php //echo $row['id']?>">Выключить</label> -->
+																<!-- </div> -->
+																<button class="fc-button fc-button-orange" data-toggle="tooltip" data-placement="top" title="Удалить юзера из БД навсегда"><i class="fa fa-trash"></i> Удалить</button>
 															</div>
 														</div>
 														<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
@@ -202,7 +246,7 @@ use app\lib\DB;
 												<input type="hidden" name="user_id" value="<?=$row['id']?>">
 												<div class="modal-footer p-1">
 													<button type="button" class="fc-button fc-button-dark" data-dismiss="modal">Закрыть</button>
-													<button type="submit" class="fc-button fc-button-orange">Сохранить</button>
+													<button type="submit" name="userDataUpdate" class="fc-button fc-button-green"><i class="fa fa-floppy-o"></i> Сохранить</button>
 												</div>
 											</form>
 										</div>
@@ -216,37 +260,93 @@ use app\lib\DB;
 						</tbody>
 					</table>
 				</div>
+				<div class="pages d-inline-flex justify-content-between w-100" <?php if($pagination['countRows'] == 0) echo 'style="display: none !important"';?>>
+					<nav aria-label="Page navigation buyers">
+						<ul class="pagination pagination-sm mb-0">
+							<?php for ($i=1; $i <= $pagination['count']; $i++) :
+								$class = ( $pagination['page'] == $i ) ? 'active' : '';
+							?>
+								<li class="page-item mx-1 <?=$class?>">
+								<?php if( !$pagination['server'] && !isset($_GET['search']) ):?>
+									<a class="page-link rounded" href="<?=$this->SITE_URL?>buyers/<?=$i?>"><?=$i?></a>
+								<?php elseif ( isset($_GET['search']) ):?>
+									<a class="page-link rounded" href="<?=$this->SITE_URL?>buyers/<?=$i?>?search=<?=$pagination['searchData']?>"><?=$i?></a>
+								<?php else:?>
+									<a class="page-link rounded" href="<?=$this->SITE_URL?>buyers/<?=$i?>?server_id=<?=$pagination['server']?>"><?=$i?></a>
+								<?php endif;?>
+								</li>
+							<?php endfor;?>
+						</ul>
+					</nav>
+					<div class="d-block text-muted" <?php if($pagination['countRows'] == 0) echo 'style="display: none !important"';?>>Всего игроков: <?=$pagination['countRows']?></div>
+				</div>
 			</div>
 		</div>
 	</div>
 </div>
 <script>
-$(document).ready(function() 
-{
-	$('#table-data-buyers').DataTable({
-		columnDefs: [{
-			targets: 'nosort',
-			orderable: false
-		}],
-		"aaSorting": [],
-		"processing": true,
-		'language' : {
-			"lengthMenu":		"Показать _MENU_ записей",
-			"emptyTable":		"Данные отсутствуют в таблице",
-			"info":				"Показано с _START_ по _END_ из _TOTAL_ записей",
-			"infoFiltered":		"(фильтрация из _MAX_ записей)",
-			"infoEmpty":		"Нет записей",
-			"loadingRecords": 	"Loading...",
-			"processing":		"Processing...",
-			"search":			"Поиск",
-			"zeroRecords":		"Не найдено подходящих записей",
-			"paginate": {
-				"first":		"Первая",
-				"last":			"Последняя",
-				"next":			"Следующая",
-				"previous":		"Предыдущая"
-			},
-		},
+	const filterServer = document.querySelector('#filterServer');
+	const urlPage = window.location.href;
+	const clearFilter = document.querySelector('#clearFilter');
+	const btnSearch = document.querySelector('#goSearch');
+	const mainUrl = <?php echo json_encode($this->SITE_URL)?>;
+
+	const getParameterByName = (name, url) => {
+		if (!url) url = window.location.href;
+		name = name.replace(/[\[\]]/g, '\\$&');
+		let regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+		    results = regex.exec(url);
+		if (!results) return null;
+		if (!results[2]) return '';
+		return decodeURIComponent(results[2].replace(/\+/g, ' '));
+	}
+
+	btnSearch.addEventListener('click', () => {
+		const search = document.querySelector('#searchInput');;
+
+		if ( search.value.length < 3 || search.value.length > 20 ) {
+			search.classList.add('is-invalid');
+			return false;
+		} else {
+			search.classList.remove('is-invalid');
+			search.classList.add('is-valid');
+		}
+
+		if ( getParameterByName('search') !== null ) // в юрл уже есть поиск
+		{
+			const urlPage 	= mainUrl + 'buyers';
+			const urlEdit 	= urlPage.split( '?' )[0]; // очищаем юрл от параметров ?...
+			const urlNew 	= `${urlEdit}?search=${search.value}`; // добавляем сервер в юрл
+			// console.log(urlPage, urlEdit, urlNew);
+			window.location.href = urlNew; // редирект
+		} else { // в юрл еще нет сервер ид
+			const urlStart 	= mainUrl + 'buyers';
+			const urlEdit 	= urlStart.split( '?' )[0];
+			const urlNew 	= `${urlEdit}?search=${search.value}`
+			// console.log(urlStart, urlEdit, urlNew);
+			window.location.href = urlNew; // редирект
+		}
 	});
-});
+
+	filterServer.addEventListener('change', (e) => 
+	{
+		if ( getParameterByName('server_id') !== null ) // в юрл уже есть сервер ид
+		{
+			const urlPage 	= mainUrl + 'buyers';
+			const urlEdit 	= urlPage.split( '?' )[0]; // очищаем юрл от параметров ?...
+			const urlNew 	= `${urlEdit}?server_id=${e.target.value}`; // добавляем сервер в юрл
+			// console.log(urlPage, urlEdit, urlNew);
+			window.location.href = urlNew; // редирект
+		} else { // в юрл еще нет сервер ид
+			const urlStart 	= mainUrl + 'buyers';
+			const urlEdit 	= urlStart.split( '?' )[0];
+			const urlNew 	= `${urlEdit}?server_id=${e.target.value}`
+			// console.log(urlStart, urlEdit, urlNew);
+			window.location.href = urlNew; // редирект
+		}
+	});
+
+	clearFilter.addEventListener('click', () => {
+		window.location.href = mainUrl + 'buyers';
+	});
 </script>

@@ -74,6 +74,13 @@ class Servers extends Model
 		return $sql['name'];
 	}
 
+	public function getServerIpById($sid)
+	{
+		$sql = DB::run("SELECT `address` FROM `{$this->DB['prefix']}_serverinfo` WHERE `id` = ?", [ $sid ])->fetch(PDO::FETCH_ASSOC);
+		if(empty($sql)) return 'server where id = '.$sid.'not found';
+		return $sql['address'];
+	}
+
 	public function getGeoIP($user_ip)
 	{
 		if ( Config::get('GEO_IP') == 0 ) {
@@ -87,5 +94,23 @@ class Servers extends Model
 			$country_name = mb_strtolower($array['country_name']);
 			return $data = ['code' => $country_code, 'name' => $country_name];
 		}
+	}
+
+	// only $_SERVER['QUERY_STRING']
+	// return server id or false
+	public function filterServer($queryStr)
+	{
+		$filterUrl = explode('=', $queryStr);
+
+		if ( !isset($filterUrl[0]) ) return false;
+
+		$serverId = ( isset($filterUrl[0]) && $filterUrl[0] == 'server_id' ) ? $filterUrl[1] : false;
+
+		if ( $serverId === false ) {
+			$this->error = 'Bad request / filter server error';
+			return false;
+		}
+
+		return (int)$serverId;
 	}
 }

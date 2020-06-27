@@ -1,9 +1,11 @@
-<?php 
+<?php
 namespace app\controllers;
 
 use app\core\Controller;
 use app\models\Main;
 use app\models\Servers;
+use app\models\Pagination;
+use app\models\Paginator;
 use app\lib\DB;
 use app\core\Config;
 
@@ -11,13 +13,35 @@ class BansController extends Controller
 {
 	public function indexAction()
 	{
+		$PAGINATION = new Pagination;
 		$SERVERS = new Servers;
+
+		// class Paginator
+		// разобраться здесь, тотал должен адоптироваться под гет параметры, поиска, и ид севрера
+		$p_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+		$p_perPage = 10;
+		$request = $this->model->sqlRequest($_GET, $p_page, $p_perPage);
+		$p_total = $request['total'];
+		$p_start = $request['start'];
+
+		$P_PAGINATOR = new Paginator($p_page, $p_perPage, $p_total);
+		// $p_start = $P_PAGINATOR->getStart();
+		$p_data = $this->model->getData($_GET, $p_start, $p_perPage);
+
+		// debug($this->route);
+		// debug($_GET);
+		// debug($_POST);
+		// debug($_SERVER);
+
 		$vars = [
 			'allBans'		=> $this->model->getAllBans(),
 			'model'			=> $this->model,
 			'allServers'	=> $this->model->getAllServers(),
 			'SERVERS'		=> $SERVERS,
 			'count_serv'	=> $SERVERS->getCountAllServers(),
+			'paginator'		=> $P_PAGINATOR,
+			'data'			=> $p_data['answer'],
+			'dataTotalRows'	=> $p_total,
 		];
 		$this->view->render(Config::get('NAME') . ' - Банлист', $vars);
 	}
@@ -26,7 +50,7 @@ class BansController extends Controller
 	{
 		$SERVERS = new Servers;
 
-		if ( !empty($_POST) ) 
+		if ( !empty($_POST) )
 		{
 			if ( isset($_POST['buyUnban']) ) {
 				$this->view->location(strval($this->model->goPayUnban($_POST)));

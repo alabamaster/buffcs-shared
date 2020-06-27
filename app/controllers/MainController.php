@@ -11,6 +11,9 @@ use app\lib\DB;
 require_once 'app/models/Sendmailer.php';
 use app\models\Sendmailer;
 
+use app\models\Pagination;
+use app\models\Servers;
+
 class MainController extends Controller
 {
 	public function indexAction()
@@ -59,17 +62,36 @@ class MainController extends Controller
 
 	public function buyersAction()
 	{
+		$PAGINATION = new Pagination;
+		$SERVERS = new Servers;
+
+		// [0] - page, [1] - server id
+		$args = explode('/', mb_substr($this->route['args'], 1));
+		$page = ( $args[0] == 1 ) ? false : /*$args[0]*/(int)substr($args[0], 0, 1);
+		$server = $SERVERS->filterServer($_SERVER['QUERY_STRING']);
+
+		$sendData = $PAGINATION->buyersGetList($page, $server);
+
+		if ( isset($_GET['search']) ) {
+			$searchData = $_GET['search'];
+			$sendData = $PAGINATION->searchBuyersGetList($page, $searchData, $server);
+		}
+
 		if ( !empty($_POST) ) 
 		{
-			if ( !$this->model->buyerDataUpdate($_POST) ) {
-				$this->view->message('error', $this->model->error);
+			if ( isset($_POST['userDataUpdate']) ) {
+				if ( !$this->model->buyerDataUpdate($_POST) ) {
+					$this->view->message('error', $this->model->error);
+				}
 			}
-			$this->view->reload();
+			// $this->view->reload();
 		}
+
 		$vars = [
 			'buyers' 		=> $this->model->getBuyers(),
 			'allServers'	=> $this->model->getAllServers(),
 			'allPrivileges'	=> $this->model->getAllPrivileges(),
+			'pagination'	=> $sendData,
 		];
 		$this->view->render($this->SITE_NAME . ' - Покупатели', $vars);
 	}
