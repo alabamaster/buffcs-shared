@@ -8,7 +8,7 @@
 				</div>
 				<?php endif; ?>
 
-				<form action="#">
+				<!-- <form action="#"> -->
 					<div class="row">
 						<div class="col-md-6">
 							<div class="form-group">
@@ -42,7 +42,7 @@
 							</div>
 						</div>
 					</div>
-				</form>
+				<!-- </form> -->
 
 				<?php if ( isset($_GET['search']) ):?>
 					<div style="background-color:#e4efff;border-left:4px solid #50adff;padding: 4px 4px 4px 15px;color:#505050;font-size:13px;">
@@ -50,7 +50,7 @@
 					</div>
 				<?php endif;?>
 
-				<div class="table-responsive">
+				<div class="table-responsive <?php if($dataTotalRows == 0) echo 'd-none';?>">
 					<table class="table table-hover" style="font-size: 14px">
 						<thead>
 							<tr>
@@ -94,7 +94,7 @@
 						</tbody>
 					</table>
 				</div>
-				<div class="row align-items-center">
+				<div class="row align-items-center <?php if($dataTotalRows == 0) echo 'd-none';?>">
 					<div class="col-md-9">
 						<?=$paginator?>
 					</div>
@@ -109,11 +109,17 @@
 <script>
 	const selectServer 	= document.querySelector('#server');
 	const inputSearch 	= document.querySelector('#search');
-	// const server 		= getParameterByName('server');
-	// const search 		= getParameterByName('search');
 	const clearFilter 	= document.querySelector('#clearFilter');
 	const btnSearch 	= document.querySelector('#goSearch');
 	const mainUrl = <?php echo json_encode($this->SITE_URL)?>;
+
+	const getParameterByName = (name) => {
+		let match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+		return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+	}
+
+	const server 		= getParameterByName('server');
+	const search 		= getParameterByName('search');
 
 	selectServer.addEventListener('change', (e) => {
 		let searchParams = new URLSearchParams(window.location.search);
@@ -129,11 +135,6 @@
 			window.location.href = '?' + newParams;
 		}
 	});
-
-	function getParameterByName(name) {
-		var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
-		return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
-	}
 
 	btnSearch.addEventListener('click', () => {
 		const search = document.querySelector('#searchInput');;

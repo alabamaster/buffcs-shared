@@ -31,19 +31,19 @@ class Bans extends Model
 		// #00ad17 - green // #c50000 - red
 		if ( $length == -1 ) {
 				// return '<span style="color: #00ad17;">Разбанен</span>';
-				return $result = ($bool == true) ? true : '<span style="color: #00ad17;">Разбанен</span>';
+				return $result = ($bool === true) ? true : '<span style="color: #00ad17;">Разбанен</span>';
 			} elseif ( $expired == 1 ) {
 				// return '<span style="color: #00ad17;">' . $length . ' мин.</span>';
-				return $result = ($bool == true) ? true : '<span style="color: #00ad17;">' . $length . ' мин.</span>';
+				return $result = ($bool === true) ? true : '<span style="color: #00ad17;">' . $length . ' мин.</span>';
 			} elseif ( $length == 0 ) {
 				// return '<span style="color: #c50000;">Бессрочно</span>';
-				return $result = ($bool == true) ? false : '<span style="color: #c50000;">Бессрочно</span>';
+				return $result = ($bool === true) ? false : '<span style="color: #c50000;">Бессрочно</span>';
 			} elseif ( ($created + $length * 60) < $this->time ) {
 				// return '<span style="color: #00ad17;">' . $length . ' мин.</span>';
-				return $result = ($bool == true) ? true : '<span style="color: #00ad17;">' . $length . ' мин.</span>';
+				return $result = ($bool === true) ? true : '<span style="color: #00ad17;">' . $length . ' мин.</span>';
 			} else {
 				// return $row['ban_length'] . ' мин.';
-				return $result = ($bool == true) ? false : $length . ' мин.';
+				return $result = ($bool === true) ? false : $length . ' мин.';
 			}
 	}
 
@@ -123,55 +123,9 @@ class Bans extends Model
 		}
 	}
 
-	public function getData($get, $start, $perPage)
-	{
-		$start = htmlspecialchars($start);
-		$perPage = htmlspecialchars($perPage);
-
-		if ( isset($get['server']) && $get['server'] != '' ) 
-		{
-			$SERVERS = new Servers;
-			$serverId = (int)$get['server'];
-			$serverIp = $SERVERS->getServerIpById($serverId);
-
-			$search = ( isset($get['search']) ) ? "AND `player_nick` LIKE '%{$get['search']}%' OR `admin_nick` LIKE '%{$get['search']}%'" : '';
-			$answer = DB::run("
-				SELECT * FROM `{$this->DB['prefix']}_bans` 
-				WHERE `server_ip` = ? {$search} 
-				ORDER BY `bid` DESC LIMIT $start, $perPage", [ $serverIp ]);
-			
-			$total = $answer->rowCount();
-
-			return ['answer' => $answer->fetchAll(), 'total' => $total];
-		}
-
-		$search = ( isset($get['search']) ) ? "WHERE `player_nick` LIKE '%{$get['search']}%' OR `admin_nick` LIKE '%{$get['search']}%'" : '';
-		$answer = DB::run("SELECT * FROM `{$this->DB['prefix']}_bans` {$search} ORDER BY `bid` DESC LIMIT $start, $perPage");
-		$total = $answer->rowCount();
-
-		return ['answer' => $answer->fetchAll(), 'total' => $total];
-	}
-
-	public function getTotalForPaginator($get)
-	{
-		if ( isset($get['server']) && $get['server'] != '' ) 
-		{
-			$SERVERS = new Servers;
-			$serverId = (int)$get['server'];
-			$serverIp = $SERVERS->getServerIpById($serverId);
-
-			$search = ( isset($get['search']) ) ? "AND `player_nick` LIKE '%{$get['search']}%' OR `admin_nick` LIKE '%{$get['search']}%'" : '';
-			$answer = DB::run("SELECT * FROM `{$this->DB['prefix']}_bans` WHERE `server_ip` = ? {$search} ORDER BY `bid` DESC", [ $serverIp ]);
-			$total = $answer->rowCount();
-		}
-
-		$search = ( isset($get['search']) ) ? "WHERE `player_nick` LIKE '%{$get['search']}%' OR `admin_nick` LIKE '%{$get['search']}%'" : '';
-		$answer = DB::run("SELECT * FROM `{$this->DB['prefix']}_bans` {$search} ORDER BY `bid` DESC");
-		$total = $answer->rowCount();
-
-		return (int)$total;
-	}
-
+	/*
+		PAGINATION
+	*/
 	public function sqlRequest($get, $page, $perPage)
 	{
 		$start = ( $page - 1 ) * $perPage;
@@ -232,6 +186,6 @@ class Bans extends Model
 		}
 		// var_dump($a);
 
-		return ['sql' => $querySQL, 'total' => $totalSQL->rowCount(), 'start' => $start];
+		return ['sql' => $querySQL->fetchAll(), 'total' => $totalSQL->rowCount(), 'start' => $start];
 	}
 }

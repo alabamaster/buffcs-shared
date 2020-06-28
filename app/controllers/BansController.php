@@ -13,7 +13,7 @@ class BansController extends Controller
 {
 	public function indexAction()
 	{
-		$PAGINATION = new Pagination;
+		// $PAGINATION = new Pagination;
 		$SERVERS = new Servers;
 
 		// class Paginator
@@ -25,13 +25,8 @@ class BansController extends Controller
 		$p_start = $request['start'];
 
 		$P_PAGINATOR = new Paginator($p_page, $p_perPage, $p_total);
-		// $p_start = $P_PAGINATOR->getStart();
-		$p_data = $this->model->getData($_GET, $p_start, $p_perPage);
-
-		// debug($this->route);
-		// debug($_GET);
-		// debug($_POST);
-		// debug($_SERVER);
+		// $p_data = $this->model->getData($_GET, $p_start, $p_perPage);
+		$p_data = $request['sql'];
 
 		$vars = [
 			'allBans'		=> $this->model->getAllBans(),
@@ -40,7 +35,7 @@ class BansController extends Controller
 			'SERVERS'		=> $SERVERS,
 			'count_serv'	=> $SERVERS->getCountAllServers(),
 			'paginator'		=> $P_PAGINATOR,
-			'data'			=> $p_data['answer'],
+			'data'			=> $p_data,
 			'dataTotalRows'	=> $p_total,
 		];
 		$this->view->render(Config::get('NAME') . ' - Банлист', $vars);

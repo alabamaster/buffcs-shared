@@ -11,7 +11,8 @@ use app\lib\DB;
 require_once 'app/models/Sendmailer.php';
 use app\models\Sendmailer;
 
-use app\models\Pagination;
+use app\models\Pagination;// remove
+use app\models\Paginator;
 use app\models\Servers;
 
 class MainController extends Controller
@@ -62,36 +63,42 @@ class MainController extends Controller
 
 	public function buyersAction()
 	{
-		$PAGINATION = new Pagination;
 		$SERVERS = new Servers;
 
-		// [0] - page, [1] - server id
-		$args = explode('/', mb_substr($this->route['args'], 1));
-		$page = ( $args[0] == 1 ) ? false : /*$args[0]*/(int)substr($args[0], 0, 1);
-		$server = $SERVERS->filterServer($_SERVER['QUERY_STRING']);
+		// class Paginator
+		// разобраться здесь, тотал должен адоптироваться под гет параметры, поиска, и ид севрера
+		$p_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+		$p_perPage = 10;
+		$request = $this->model->sqlRequest($_GET, $p_page, $p_perPage);
+		$p_total = $request['total'];
+		$p_start = $request['start'];
 
-		$sendData = $PAGINATION->buyersGetList($page, $server);
+		$P_PAGINATOR = new Paginator($p_page, $p_perPage, $p_total);
 
-		if ( isset($_GET['search']) ) {
-			$searchData = $_GET['search'];
-			$sendData = $PAGINATION->searchBuyersGetList($page, $searchData, $server);
-		}
+		if ( $p_page >= 2 && $p_total < $p_perPage ) $this->view->redirect($this->SITEURL . 'buyers?page=1');
 
-		if ( !empty($_POST) ) 
+		if ( !empty($_POST) && isset($_SESSION['admin']) ) 
 		{
-			if ( isset($_POST['userDataUpdate']) ) {
-				if ( !$this->model->buyerDataUpdate($_POST) ) {
+			if ( isset($_POST['deleteUser']) ) {
+				if ( !$this->model->deleteUser($_POST['deleteUser']) ) {
 					$this->view->message('error', $this->model->error);
 				}
+				$this->view->reload();
 			}
-			// $this->view->reload();
+			if ( !$this->model->buyerDataUpdate($_POST) ) {
+				$this->view->message('error', $this->model->error);
+			}
+			$this->view->reload();
 		}
 
 		$vars = [
 			'buyers' 		=> $this->model->getBuyers(),
 			'allServers'	=> $this->model->getAllServers(),
 			'allPrivileges'	=> $this->model->getAllPrivileges(),
-			'pagination'	=> $sendData,
+			// 'pagination'	=> $sendData,
+			'paginator'		=> $P_PAGINATOR,
+			'data'			=> /*$p_data['answer']*/$request['sql'],
+			'dataTotalRows'	=> $p_total,
 		];
 		$this->view->render($this->SITE_NAME . ' - Покупатели', $vars);
 	}

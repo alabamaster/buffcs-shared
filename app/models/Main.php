@@ -14,8 +14,6 @@ require_once 'app/lib/qiwi/BillPaymentsException.php';
 use app\core\Model;
 use app\core\Config;
 
-// отправлять от сюда псьмо
-
 use app\lib\Qiwi\Api\BillPayments;
 use app\lib\UnitPay; // unitpay
 use app\lib\DB;
@@ -36,10 +34,7 @@ class Main extends Model
 		$FK 	= ($this->FK['active'] == 1) ? $FK = '<option value="freekassa">Freekassa</option>' : '';
 		$RK 	= ($this->RK['active'] == 1) ? $RK = '<option value="robokassa">Robokassa</option>' : '';
 		$UP 	= ($this->UP['active'] == 1) ? $UP = '<option value="unitpay">UnitPay</option>' : '';
-		// $IK 	= ($this->IK['active'] == 1) ? $IK = '<option value="interkassa">Interkassa</option>' : '';
-		// $WM 	= ($this->WM['active'] == 1) ? $WM = '<option value="webmoney">WebMoney</option>' : '';
-		// $QIWI 	= ($this->QIWI['active'] == 1) ? $QIWI = '<option value="qiwi">QIWI</option>' : '';
-		$html 	= $FK . $RK . $UP /*. $IK . $WM . $QIWI*/;
+		$html 	= $FK . $RK . $UP;
 		return $html;
 	}
 
@@ -146,23 +141,24 @@ class Main extends Model
 		switch ($post['type']) {
 			case 'a':
 				// check nickname
-				if ( $username != $sql['nickname'] ) {
-					$check_username = DB::run('SELECT `username` FROM `'.$this->DB['prefix'].'_amxadmins` WHERE `username` = ? AND `nickname` = ?', 
-						[ $username, $username ])->rowCount();
-					if ( $check_username > 0 ) {
+				if ( $username != $sql['nickname'] ) 
+				{
+					$check = DB::run("SELECT `username` FROM `{$this->DB['prefix']}_amxadmins` WHERE `username` = ? AND `nickname` = ?", [ $username, $username ])->rowCount();
+					if ( $check > 0 ) 
+					{
 						$this->error = 'Такой никнейм уже занят!';
 						return false;
 					}
-					DB::run('UPDATE `'.$this->DB['prefix'].'_amxadmins` SET `username` = ?, `steamid` = ?, `nickname` = ? WHERE `id` = ?', [ $username, null, $username, $post['user_id'] ]);
+					DB::run("UPDATE `{$this->DB['prefix']}_amxadmins` SET `username` = ?, `steamid` = ?, `nickname` = ? WHERE `id` = ?", [ $username, $username, $username, $post['user_id'] ]);
 				}
 			break;
 			
 			case 'ac':
 				// check steamid
 				if ( $username != $sql['steamid'] ) {
-					$check_username = DB::run('SELECT `username` FROM `'.$this->DB['prefix'].'_amxadmins` WHERE `username` = ? AND `steamid` = ?', 
+					$check = DB::run('SELECT `username` FROM `'.$this->DB['prefix'].'_amxadmins` WHERE `username` = ? AND `steamid` = ?', 
 						[ $username, $username ])->rowCount();
-					if ( $check_username > 0 ) {
+					if ( $check > 0 ) {
 						$this->error = 'Такой steamid уже занят!';
 						return false;
 					}
@@ -595,5 +591,112 @@ class Main extends Model
 			$amount = ($this->DISCOUNT['active'] == 1) ? self::discount($price, $this->DISCOUNT['discount']) : $price;
 		}
 		return $amount;
+	}
+
+	/*
+		PAGINATION
+	*/
+	public function sqlRequest($get, $page, $perPage)
+	{
+		$start 		= ( $page - 1 ) * $perPage;
+		$orderSQL 	= 'ORDER BY `t1`.`created` DESC';
+		$notAdmin 	= ( !isset($_SESSION['admin']) ) ? 'AND `t1`.`ashow` = 1' : '';
+		$sort 		= Config::get('BUYERS_SORT');
+		if ( $sort == 1 ) {
+			$sortSQL = '';
+		} elseif ( $sort == 2 ) {
+			$sortSQL = "AND (`t1`.`expired` >= {$this->time} OR `t1`.`expired` = 0)";
+		} else {
+			$sortSQL = '';
+		}
+		
+		$serverID 	= ( isset($get['server']) ) ? (int)htmlspecialchars($get['server']) : false;
+		$search 	= ( isset($get['search']) ) ? '%' . $get['search'] . '%' : false;
+
+		if ( $serverID !== false && $search === false ) { // только сервер
+			$querySQL = DB::run("
+				SELECT * FROM `{$this->DB['prefix']}_amxadmins` `t1` JOIN `{$this->DB['prefix']}_admins_servers` `t2` 
+				WHERE `t2`.`server_id` = ? AND `t1`.`id` = `t2`.`admin_id` $sortSQL $orderSQL LIMIT $start, $perPage
+			", [ $serverID ]);
+			
+			$totalSQL = DB::run("
+				SELECT * FROM `{$this->DB['prefix']}_amxadmins` `t1` JOIN `{$this->DB['prefix']}_admins_servers` `t2` 
+				WHERE `t2`.`server_id` = ? AND `t1`.`id` = `t2`.`admin_id` $sortSQL $orderSQL", [ $serverID ]);
+			$a = 1;
+		}
+
+		if ( $serverID === false && $search !== false ) { // только поиск
+			$querySQL = DB::run("
+				SELECT * FROM `{$this->DB['prefix']}_amxadmins` `t1` JOIN `{$this->DB['prefix']}_admins_servers` `t2` 
+				WHERE `t1`.`username` LIKE ? AND `t1`.`id` = `t2`.`admin_id` $sortSQL $orderSQL LIMIT $start, $perPage
+			", [ $search ]);
+			
+			$totalSQL = DB::run("
+				SELECT * FROM `{$this->DB['prefix']}_amxadmins` `t1` JOIN `{$this->DB['prefix']}_admins_servers` `t2` 
+				WHERE `t1`.`username` LIKE ? AND `t1`.`id` = `t2`.`admin_id` $sortSQL $orderSQL", [ $search ]);
+			$a = 2;
+		}
+
+		if ( $serverID && $search ) { // сервер и поиск
+			$querySQL = DB::run("
+				SELECT * FROM `{$this->DB['prefix']}_amxadmins` `t1` JOIN `{$this->DB['prefix']}_admins_servers` `t2` 
+				WHERE `t2`.`server_id` = ? AND `t1`.`username` LIKE ? AND `t1`.`id` = `t2`.`admin_id` $sortSQL $orderSQL LIMIT $start, $perPage
+			", [ $serverID, $search ]);
+			
+			$totalSQL = DB::run("
+				SELECT * FROM `{$this->DB['prefix']}_amxadmins` `t1` JOIN `{$this->DB['prefix']}_admins_servers` `t2` 
+				WHERE `t2`.`server_id` = ? AND `t1`.`username` LIKE ? AND `t1`.`id` = `t2`.`admin_id` $sortSQL $orderSQL", [ $serverID, $search ]);
+			$a = 3;
+		}
+
+		if ( !isset($querySQL) ) {
+			$notAdmin = ( !isset($_SESSION['admin']) ) ? 'AND `t1`.`ashow` = 1' : '';
+			$querySQL = DB::run("
+				SELECT * FROM `{$this->DB['prefix']}_amxadmins` `t1` JOIN `{$this->DB['prefix']}_admins_servers` `t2` 
+				WHERE `t1`.`id` = `t2`.`admin_id` 
+				AND (`t1`.`tarif_id` != 0 OR `t1`.`tarif_id` != NULL) $notAdmin $sortSQL $orderSQL LIMIT $start, $perPage
+			");
+			
+			$totalSQL = DB::run("
+				SELECT * FROM `{$this->DB['prefix']}_amxadmins` `t1` JOIN `{$this->DB['prefix']}_admins_servers` `t2` 
+				WHERE `t1`.`id` = `t2`.`admin_id` 
+				AND (`t1`.`tarif_id` != 0 OR `t1`.`tarif_id` != NULL) $notAdmin $sortSQL $orderSQL
+			");
+			$a = 4;
+		}
+
+		// var_dump($a);
+
+		return ['sql' => $querySQL->fetchAll(), 'total' => $totalSQL->rowCount(), 'start' => $start];
+	}
+
+	/*
+		USER DELETE
+	*/
+	public function deleteUser($uid)
+	{
+		$uid = (int)$uid;
+
+		$sql = DB::run("
+			SELECT COUNT(id) FROM `{$this->DB['prefix']}_amxadmins` `t1` JOIN `{$this->DB['prefix']}_admins_servers` `t2` 
+			WHERE `t1`.`id` = ? AND `t1`.`id` = `t2`.`admin_id` LIMIT 1
+		", [ $uid ])->fetchColumn();
+
+		if ( !$sql || $sql = 0 ) {
+			$this->error = 'Ошибка запроса к базе данных';
+			return false;
+		}
+
+		try {
+			DB::beginTransaction();
+			DB::run("DELETE FROM `{$this->DB['prefix']}_amxadmins` WHERE `id` = ?", [ $uid ]);
+			DB::run("DELETE FROM `{$this->DB['prefix']}_admins_servers` WHERE `admin_id` = ?", [ $uid ]);
+			DB::Commit();
+			return true;
+		} catch (Exception $e) {
+			DB::rollBack();
+			$this->error = 'Ошибка удаления, обратитесь к разработчику';
+			return false;
+		}
 	}
 }
