@@ -616,36 +616,42 @@ class Main extends Model
 		if ( $serverID !== false && $search === false ) { // только сервер
 			$querySQL = DB::run("
 				SELECT * FROM `{$this->DB['prefix']}_amxadmins` `t1` JOIN `{$this->DB['prefix']}_admins_servers` `t2` 
-				WHERE `t2`.`server_id` = ? AND `t1`.`id` = `t2`.`admin_id` $sortSQL $orderSQL LIMIT $start, $perPage
+				WHERE `t2`.`server_id` = ? AND `t1`.`id` = `t2`.`admin_id` 
+				AND (`t1`.`tarif_id` != 0 OR `t1`.`tarif_id` != NULL) $notAdmin $sortSQL $orderSQL LIMIT $start, $perPage
 			", [ $serverID ]);
 			
 			$totalSQL = DB::run("
 				SELECT * FROM `{$this->DB['prefix']}_amxadmins` `t1` JOIN `{$this->DB['prefix']}_admins_servers` `t2` 
-				WHERE `t2`.`server_id` = ? AND `t1`.`id` = `t2`.`admin_id` $sortSQL $orderSQL", [ $serverID ]);
+				WHERE `t2`.`server_id` = ? AND `t1`.`id` = `t2`.`admin_id` 
+				AND (`t1`.`tarif_id` != 0 OR `t1`.`tarif_id` != NULL) $notAdmin $sortSQL $orderSQL", [ $serverID ]);
 			$a = 1;
 		}
 
 		if ( $serverID === false && $search !== false ) { // только поиск
 			$querySQL = DB::run("
 				SELECT * FROM `{$this->DB['prefix']}_amxadmins` `t1` JOIN `{$this->DB['prefix']}_admins_servers` `t2` 
-				WHERE `t1`.`username` LIKE ? AND `t1`.`id` = `t2`.`admin_id` $sortSQL $orderSQL LIMIT $start, $perPage
+				WHERE `t1`.`username` LIKE ? AND `t1`.`id` = `t2`.`admin_id` 
+				AND (`t1`.`tarif_id` != 0 OR `t1`.`tarif_id` != NULL) $notAdmin $sortSQL $orderSQL LIMIT $start, $perPage
 			", [ $search ]);
 			
 			$totalSQL = DB::run("
 				SELECT * FROM `{$this->DB['prefix']}_amxadmins` `t1` JOIN `{$this->DB['prefix']}_admins_servers` `t2` 
-				WHERE `t1`.`username` LIKE ? AND `t1`.`id` = `t2`.`admin_id` $sortSQL $orderSQL", [ $search ]);
+				WHERE `t1`.`username` LIKE ? AND `t1`.`id` = `t2`.`admin_id` 
+				AND (`t1`.`tarif_id` != 0 OR `t1`.`tarif_id` != NULL) $notAdmin $sortSQL $orderSQL", [ $search ]);
 			$a = 2;
 		}
 
 		if ( $serverID && $search ) { // сервер и поиск
 			$querySQL = DB::run("
 				SELECT * FROM `{$this->DB['prefix']}_amxadmins` `t1` JOIN `{$this->DB['prefix']}_admins_servers` `t2` 
-				WHERE `t2`.`server_id` = ? AND `t1`.`username` LIKE ? AND `t1`.`id` = `t2`.`admin_id` $sortSQL $orderSQL LIMIT $start, $perPage
+				WHERE `t2`.`server_id` = ? AND `t1`.`username` LIKE ? AND `t1`.`id` = `t2`.`admin_id` 
+				AND (`t1`.`tarif_id` != 0 OR `t1`.`tarif_id` != NULL) $notAdmin $sortSQL $orderSQL LIMIT $start, $perPage
 			", [ $serverID, $search ]);
 			
 			$totalSQL = DB::run("
 				SELECT * FROM `{$this->DB['prefix']}_amxadmins` `t1` JOIN `{$this->DB['prefix']}_admins_servers` `t2` 
-				WHERE `t2`.`server_id` = ? AND `t1`.`username` LIKE ? AND `t1`.`id` = `t2`.`admin_id` $sortSQL $orderSQL", [ $serverID, $search ]);
+				WHERE `t2`.`server_id` = ? AND `t1`.`username` LIKE ? AND `t1`.`id` = `t2`.`admin_id` 
+				AND (`t1`.`tarif_id` != 0 OR `t1`.`tarif_id` != NULL) $notAdmin $sortSQL $orderSQL", [ $serverID, $search ]);
 			$a = 3;
 		}
 
