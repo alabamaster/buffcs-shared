@@ -374,25 +374,29 @@ class Main extends Model
 		$srok = ( $info['time'] == 0 ) ? $srok = 'сроком Навсегда': $srok = 'сроком на '.$info['time'].' дней.';
 		$desc = 'Привилегия '.$info['name'] .' '. $srok; // в юрл могут быть проблемы из за пробелов
 		$browser = isset($_SERVER['HTTP_USER_AGENT']) ? substr($_SERVER['HTTP_USER_AGENT'], 0, 99) : null;
-
-		try {
-			DB::run('INSERT INTO `ez_buy_logs`(`id`, `web_id`, `steamid`, `nickname`, `password`, `access`, `type`, `sid`, `pid`, `days`, `shop`, `browser`, `ip`, `vk`, `email`, `created`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [$pay_id, $web_id, $user, $user, $post['password'], $info['access'], $post['type'], $post['server'], $post['privilege'], $post['days'], $post['shop'], $browser, $_SERVER['REMOTE_ADDR'], $vk, $email, $this->time]);
-		} catch (Exception $e) {
-			echo 'Error: ' . $e->getMessage();
-			return false;
-		}
+		$buy_type = 1;
 
 		// продление привилегии через ЛК
-		if ( isset($_SESSION['authorization']) && $updateTimeUser != null ) {
+		if ( isset($_SESSION['authorization']) && $updateTimeUser !== null ) {
 			$core_id = 'core_id=3';
+			$buy_type = 3;
 		}
 		// покупка новой привилегии через ЛК
-		if ( isset($_SESSION['authorization']) && $updateTimeUser == null ) {
+		if ( isset($_SESSION['authorization']) && $updateTimeUser === null ) {
 			$core_id = 'core_id=2';
+			$buy_type = 2;
 		}
 		// покупка привилегий
 		if ( !isset($_SESSION['authorization']) ) {
 			$core_id = 'core_id=1';
+			$buy_type = 1;
+		}
+
+		try {
+			DB::run('INSERT INTO `ez_buy_logs`(`id`, `web_id`, `steamid`, `nickname`, `password`, `access`, `type`, `sid`, `pid`, `days`, `shop`, `browser`, `ip`, `vk`, `email`, `created`, `buy_type`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [$pay_id, $web_id, $user, $user, $post['password'], $info['access'], $post['type'], $post['server'], $post['privilege'], $post['days'], $post['shop'], $browser, $_SERVER['REMOTE_ADDR'], $vk, $email, $this->time, $buy_type]);
+		} catch (Exception $e) {
+			echo 'Error: ' . $e->getMessage();
+			return false;
 		}
 
 		switch ($post['shop']) {
@@ -419,25 +423,6 @@ class Main extends Model
 				$url = $unitPay->form($this->UP['publicId'], $order_amount, $pay_id.'.'.$core_id[1], $desc, $this->UP['currency']);
 				return $url;
 			break;
-
-			// case 'interkassa':
-			// 	$url = $this->IK['url'].'?ik_co_id='.$this->IK['shop_id'].'&ik_am='.$order_amount.'&ik_cur=RUB&ik_desc='.$desc.'&ik_inv_id='.$pay_id.'&ik_pm_no='.$pay_id;
-			// 	debug($url);
-			// break;
-
-			// case 'qiwi':
-			// 	$qiwiObj = new BillPayments;
-			// 	$params = [
-			// 		'publicKey'		=> $this->QIWI['public_key'],
-			// 		'amount' 		=> $order_amount,
-			// 		'billId'		=> $pay_id,
-			// 		'successUrl'	=> "{$this->SITE_URL}success",
-			// 		'comment'		=> $desc,
-			// 	];
-
-			// 	$url = $qiwiObj->createPaymentForm($params);
-			// 	return $url;
-			// break;
 		}
 	}
 

@@ -21,12 +21,12 @@
 								foreach ($logs as $row):
 									$username = ($row['type'] == 'a') ? htmlspecialchars($row['nickname']) : htmlspecialchars($row['steamid']);
 									$typeBuy = ($row['type'] == 'a') ? 'Ник + пароль' : 'SteamID + пароль';
-									$payStatus = ($model->statusForViewBuyLogs($username, $row['password'], $row['web_id']) == 1) ? '<span class="badge badge-success">Оплачено</span>' : '<span class="badge badge-dark">Ожидание</span>';
+									$buyStatus = ($row['buy_status'] == 1) ? '<span class="badge badge-success">Оплачено</span>' : '<span class="badge badge-dark">Ожидание</span>';
 							?>
 								<tr>
 									<td><?=$username?></td>
 									<td class="text-center"><?=date('d.m.Y в H:i', $row['created'])?></td>
-									<td class="text-center"><?=$payStatus?></td>
+									<td class="text-center"><?=$buyStatus?></td>
 									<td class="text-center"><a href="#" data-toggle="modal" data-target="#moreInfo<?=$row['table_id']?>">Подробнее</a></td>
 								</tr>
 						<!-- Modal -->
@@ -35,7 +35,7 @@
 						<div class="modal-content">
 						<div class="modal-header" style="padding: 10px;">
 						<h5 class="modal-title" id="MoreInfo">
-							<div><?=$username?></div><div class="m-l-3" style="font-size: 14px;"><?=$payStatus?></div>
+							<div><?=$username?></div><div class="m-l-3" style="font-size: 14px;"><?=$buyStatus?></div>
 						</h5>
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 						<span aria-hidden="true">&times;</span>
@@ -43,6 +43,17 @@
 						</div>
 						<div class="modal-body" style="font-size: 14px;">
 						<ul class="list-group list-group-flush">
+							<li class="list-group-item p-1">
+								<div class="font-weight-bold">Действие</div><p class="m-0">
+									<?php if ($row['buy_type'] == 1):?>
+										Покупка привилегии
+									<?php elseif ($row['buy_type'] == 2):?>
+										Покупка привилегии через ЛК
+									<?php elseif ($row['buy_type'] == 3):?>
+										Продление привилегии через ЛК
+									<?php endif;?>
+								</p>
+							</li>
 							<li class="list-group-item p-1">
 								<div class="font-weight-bold">ID покупки</div><p class="m-0"><?=$row['id']?></p>
 							</li>

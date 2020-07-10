@@ -17,25 +17,17 @@ use PDO;
 
 class UnitpayModel extends Model
 {
-	// private $DB = [];
-	// private $DISC;
-	// private $FK;
 	private $MAILER;
 
 	// other models
 	private $MERCHANT;
 	private $ACCOUNT;
-	// private $UP;
 	public $UnitPay;
 
 	public function __construct()
 	{
 		parent::__construct();
-		// $this->DB = require 'app/configs/db.php';
-		// $this->time = time();
 
-		// $this->DISC = Config::get('DISC');
-		// $this->UP = Config::get('UP'); // unitpay
 		$this->UnitPay = new UnitPay($this->UP['domain'], $this->UP['secretKey']);
 
 		// other models
@@ -64,17 +56,13 @@ class UnitpayModel extends Model
 		$check_admins	= false;
 
 		$this->UnitPay = new UnitPay($this->UP['domain'], $this->UP['secretKey']);
-		// $response = $this->UnitPay->api('getPayment', ['paymentId' => $pay_id]);
-		// debug($response);
 
 		if( $core_id != 'up_core_id=1' ) {
-			// echo 'Error: merchantModels / Unitpay / checkPay / error #1';
 			print $this->UnitPay->getErrorHandlerResponse("MerchantModels / Unitpay / checkPay / error #1 (core_id: $core_id)");
 		}
 
 		$temp = DB::run('SELECT * FROM `ez_buy_logs` WHERE `id` = ? LIMIT 1', [ $pay_id[0] ] )->fetch(PDO::FETCH_ASSOC);
 		if(!$temp) {
-			// echo 'Error: merchantModels / Unitpay / checkPay / error #2';
 			print $this->UnitPay->getErrorHandlerResponse("MerchantModels / Unitpay / checkPay / error #2 (sql false)");
 		}
 
@@ -92,6 +80,7 @@ class UnitpayModel extends Model
 			'email'		=> $temp['email'],
 			'browser'	=> $temp['browser'],
 			'ip'		=> $temp['ip'],
+			'pay_id'	=> $pay_id[0],
 		];
 
 		$info = DB::run('SELECT * FROM `ez_privileges` `t1` JOIN `ez_privileges_times` `t2` WHERE `t2`.`pid` = ? AND `t1`.`sid` = ? AND `t1`.`id` = ? AND `t2`.`time` = ? LIMIT 1', [ $temp_arr['tariff'], $temp_arr['server'], $temp_arr['tariff'], $temp_arr['days'] ])->fetch(PDO::FETCH_ASSOC);
@@ -108,29 +97,21 @@ class UnitpayModel extends Model
 
 		$check_admins = DB::run('SELECT * FROM `'.$this->DB['prefix'].'_amxadmins` WHERE `username` = ? AND `password` = ? LIMIT 1', [$user, $temp_arr['pass_md5']])->fetch(PDO::FETCH_ASSOC);
 		
-		return $this->saveNewUser($check_admins, $temp_arr, $pay_id[0]);
+		return $this->saveNewUser($check_admins, $temp_arr);
 	}
 
-	public function saveNewUser($check_admins, $arr, $pay_id)
+	public function saveNewUser($check_admins, $arr)
 	{
 		switch ($check_admins) {
 			case true: // нашли юзера в базе
-				// echo 'exist';
 				print $this->UnitPay->getErrorHandlerResponse('user exist');
 			break;
 			
 			case false: // не нашли юзера в базе
-				// echo 'no exist';
-				if ( $arr['days'] == 0 ) 
-				{
-					$date_end = 0;
-				} else {
-					$date_end = $this->time + 3600 * 24 * $arr['days'];
-				}
-
 				$days = $arr['days'];
 				$ashow = 1;
 				$static_ban = 'no';
+				$date_end = ( $days ) ? 0 : $this->time + 3600 * 24 * $days;
 
 				$reloadAdminsStatus = null;
 				$sendMailStatus = false;
@@ -139,6 +120,9 @@ class UnitpayModel extends Model
 				$username 	= ($arr['type'] == 'a') ? $arr['nickname'] : $arr['steamid'];
 				$steamid 	= ($arr['type'] == 'a') ? $arr['nickname'] : $arr['steamid'];
 				$nickname 	= ($arr['type'] == 'a') ? $arr['nickname'] : $arr['steamid'];
+
+				// обновление статуса платежа
+				DB::run('UPDATE `ez_buy_logs` SET `buy_status` = 1 WHERE `id` = ?', [ $arr['pay_id'] ]);
 
 				// https://tproger.ru/translations/how-to-configure-and-use-pdo/#prepared_statements
 				DB::beginTransaction();
@@ -162,16 +146,6 @@ class UnitpayModel extends Model
 					print $this->UnitPay->getErrorHandlerResponse('MerchantModels / Unitpay / saveNewUser: sql transaction error');
 				}
 
-				// отправка почты
-				// $this->MAILER->newPaySuccessMessage($pay_id);
-
-				// // отправка amx_reloadadmins
-				// if ( Config::get('RELOADADMINS') == 1 ) {
-				// 	if ( !$this->MERCHANT->reloadAdmins($arr['server']) ) {
-				// 		print $this->UnitPay->getErrorHandlerResponse('MerchantModels / Unitpay /' . $this->MERCHANT->error);
-				// 	}
-				// }
-
 				// reload admins
 				if ( Config::get('RELOADADMINS') == 1 ) 
 				{
@@ -185,7 +159,7 @@ class UnitpayModel extends Model
 				}
 
 				// отправка почты
-				if ( $this->MAILER->newPaySuccessMessage($pay_id) ) {
+				if ( $this->MAILER->newPaySuccessMessage($arr['pay_id']) ) {
 					$sendMailStatus = true;
 				}
 
@@ -217,7 +191,6 @@ class UnitpayModel extends Model
 		$username		= null;
 		$check_admins	= false;
 
-
 		if( $core_id != 'up_core_id=2' && $core_id != 'up_core_id=3' ) {
 			print $this->UnitPay->getErrorHandlerResponse('MerchantModels / Unitpay / checkAuthPay / error #1');
 			var_dump($core_id);
@@ -242,10 +215,10 @@ class UnitpayModel extends Model
 			'email'		=> $temp['email'],
 			'browser'	=> $temp['browser'],
 			'ip'		=> $temp['ip'],
+			'pay_id'	=> $pay_id[0],
 		];
 
 		$info = DB::run('SELECT * FROM `ez_privileges` `t1` JOIN `ez_privileges_times` `t2` WHERE `t2`.`pid` = ? AND `t1`.`sid` = ? AND `t1`.`id` = ? AND `t2`.`time` = ? LIMIT 1', [ $temp_arr['tariff'], $temp_arr['server'], $temp_arr['tariff'], $temp_arr['days'] ])->fetch(PDO::FETCH_ASSOC);
-
 
 		$price = $this->MERCHANT->resultAmountCalculate($info['price'], $info['sid'], $info['pid'], $temp_arr['browser'], $temp_arr['ip']);
 		
@@ -274,13 +247,16 @@ class UnitpayModel extends Model
 			
 			case true: //  нашли юзера в базе
 				$days = $arr['days'];
-				$date_end = ($days == 0) ? $date_end = 0 : $date_end = $this->time + 3600 * 24 * $days;
+				$date_end = ( $days ) ? 0 : $this->time + 3600 * 24 * $days;
 
 				$sql = DB::run('SELECT * FROM `'.$this->DB['prefix'].'_amxadmins` `t1` JOIN `'.$this->DB['prefix'].'_admins_servers` `t2` WHERE `t1`.`id` = ? AND `t1`.`id` = `t2`.`admin_id` LIMIT 1', [$arr['user_id']])->fetch(PDO::FETCH_ASSOC);
 
 				if(!$sql) {
 					print $this->UnitPay->getErrorHandlerResponse('MerchantModels / Unitpay / saveAuthUser: case true: sql error');
 				}
+
+				// обновление статуса платежа
+				DB::run('UPDATE `ez_buy_logs` SET `buy_status` = 1 WHERE `id` = ?', [ $arr['pay_id'] ]);
 
 				try {
 					DB::run('UPDATE `'.$this->DB['prefix'].'_amxadmins` SET `access` = ?, `created` = ?, `expired` = ?, `days` = ?, `tarif_id` = ? WHERE `id` = ?', [
@@ -302,7 +278,10 @@ class UnitpayModel extends Model
 		switch ($check_admins) {
 			case true:
 				$days = $arr['days'];
-				$date_end = ($days == 0) ? $date_end = 0 : $date_end = $this->time + 3600 * 24 * $days;
+				$date_end = ( $days ) ? 0 : $this->time + 3600 * 24 * $days;
+
+				// обновление статуса платежа
+				DB::run('UPDATE `ez_buy_logs` SET `buy_status` = 1 WHERE `id` = ?', [ $arr['pay_id'] ]);
 
 				if( $date_end == 0 )
 				{

@@ -15,9 +15,6 @@ use PDO;
 
 class Robokassa extends Model
 {
-	// private $DB = [];
-	// private $DISC;
-	// private $RK;
 	private $MAILER;
 
 	// other models
@@ -27,11 +24,6 @@ class Robokassa extends Model
 	public function __construct()
 	{
 		parent::__construct();
-		// $this->DB = require 'app/configs/db.php';
-		// $this->time = time();
-
-		// $this->DISC = Config::get('DISC');
-		// $this->RK = Config::get('RK');
 
 		// other models
 		$this->MERCHANT = new Merchant;
@@ -49,20 +41,17 @@ class Robokassa extends Model
 		$amount 		= $post['OutSum'];
 		$pay_id 		= $post['InvId'];
 		$core_id 		= $post['shp_core_id'];
-		$crc = strtoupper($post['SignatureValue']);
+		$crc 			= strtoupper($post['SignatureValue']);
 		$password2		= $this->RK['pass2'];
 
 		// проверка подписи
 		$my_crc = strtoupper( md5("$amount:$pay_id:$password2:shp_core_id=1") );
-		if ( $my_crc != $crc ) 
-		{
-			die("Error: merchantModels / Robokassa / checkPay: wrong sign\n");
-		}
-
-		if($core_id != 1) die("Error: merchantModels / Robokassa / checkPay: core_id error\n");
+		if ( $my_crc != $crc ) die("Error: merchantModels / Robokassa / checkPay: wrong sign\n");
+		
+		if( $core_id != 1 ) die("Error: merchantModels / Robokassa / checkPay: core_id error\n");
 
 		$temp = DB::run('SELECT * FROM `ez_buy_logs` WHERE `id` = ? LIMIT 1', [ $pay_id ] )->fetch(PDO::FETCH_ASSOC);
-		if(!$temp) return false;
+		if(!$temp) die("Error: merchantModels / Robokassa / checkPay: order id: {$pay_id} not found\n");
 
 		$temp_arr = [
 			'nickname'	=> $temp['nickname'],
@@ -78,6 +67,7 @@ class Robokassa extends Model
 			'email'		=> $temp['email'],
 			'browser'	=> $temp['browser'],
 			'ip'		=> $temp['ip'],
+			'pay_id'	=> $pay_id,
 		];
 
 		$info = DB::run('SELECT * FROM `ez_privileges` `t1` JOIN `ez_privileges_times` `t2` WHERE `t2`.`pid` = ? AND `t1`.`sid` = ? AND `t1`.`id` = ? AND `t2`.`time` = ? LIMIT 1', [ $temp_arr['tariff'], $temp_arr['server'], $temp_arr['tariff'], $temp_arr['days'] ])->fetch(PDO::FETCH_ASSOC);
@@ -95,10 +85,10 @@ class Robokassa extends Model
 		$check_admins = DB::run('SELECT * FROM `'.$this->DB['prefix'].'_amxadmins` WHERE `username` = ? AND `password` = ? LIMIT 1', [$user, $temp_arr['pass_md5']])->fetch(PDO::FETCH_ASSOC);
 
 		echo "OK$pay_id\n";
-		return $this->saveNewUser($check_admins, $temp_arr, $pay_id);
+		return $this->saveNewUser($check_admins, $temp_arr);
 	}
 
-	public function saveNewUser($check_admins, $arr, $pay_id)
+	public function saveNewUser($check_admins, $arr)
 	{
 		switch ($check_admins) {
 			case true: // нашли юзера в базе
@@ -106,17 +96,10 @@ class Robokassa extends Model
 			break;
 			
 			case false: // не нашли юзера в базе
-				// echo 'no exist';
-				if ( $arr['days'] == 0 ) 
-				{
-					$date_end = 0;
-				} else {
-					$date_end = $this->time + 3600 * 24 * $arr['days'];
-				}
-
-				$days = $arr['days'];
-				$ashow = 1;
+				$days 		= $arr['days'];
+				$ashow 		= 1;
 				$static_ban = 'no';
+				$date_end 	= ( $days == 0 ) ? 0 : $this->time + 3600 * 24 * $days;
 
 				$reloadAdminsStatus = null;
 				$sendMailStatus = false;
@@ -125,6 +108,9 @@ class Robokassa extends Model
 				$username 	= ($arr['type'] == 'a') ? $arr['nickname'] : $arr['steamid'];
 				$steamid 	= ($arr['type'] == 'a') ? $arr['nickname'] : $arr['steamid'];
 				$nickname 	= ($arr['type'] == 'a') ? $arr['nickname'] : $arr['steamid'];
+
+				// обновление статуса платежа
+				DB::run('UPDATE `ez_buy_logs` SET `buy_status` = 1 WHERE `id` = ?', [ $arr['pay_id'] ]);
 
 				# https://tproger.ru/translations/how-to-configure-and-use-pdo/#prepared_statements
 				DB::beginTransaction();
@@ -162,7 +148,7 @@ class Robokassa extends Model
 				}
 
 				// отправка почты
-				if ( $this->MAILER->newPaySuccessMessage($pay_id) ) {
+				if ( $this->MAILER->newPaySuccessMessage($arr['pay_id']) ) {
 					$sendMailStatus = true;
 				}
 
@@ -184,7 +170,7 @@ class Robokassa extends Model
 		$amount 		= $post['OutSum'];
 		$pay_id 		= $post['InvId'];
 		$core_id 		= $post['shp_core_id'];
-		$crc = strtoupper($post['SignatureValue']);
+		$crc 			= strtoupper($post['SignatureValue']);
 		$password2		= $this->RK['pass2'];
 
 		// проверка подписи
@@ -220,6 +206,7 @@ class Robokassa extends Model
 			'email'		=> $temp['email'],
 			'browser'	=> $temp['browser'],
 			'ip'		=> $temp['ip'],
+			'pay_id'	=> $pay_id,
 		];
 
 		$info = DB::run('SELECT * FROM `ez_privileges` `t1` JOIN `ez_privileges_times` `t2` WHERE `t2`.`pid` = ? AND `t1`.`sid` = ? AND `t1`.`id` = ? AND `t2`.`time` = ? LIMIT 1', [ $temp_arr['tariff'], $temp_arr['server'], $temp_arr['tariff'], $temp_arr['days'] ])->fetch(PDO::FETCH_ASSOC);
@@ -235,6 +222,8 @@ class Robokassa extends Model
 		$user = ($temp_arr['type'] == 'a') ? $user = $temp_arr['nickname'] : $user = $temp_arr['steamid'];
 
 		$check_admins = DB::run('SELECT * FROM `'.$this->DB['prefix'].'_amxadmins` WHERE `username` = ? AND `password` = ? LIMIT 1', [$user, $temp_arr['pass']])->fetch(PDO::FETCH_ASSOC);
+
+		echo "OK$pay_id\n";
 		
 		if($post['shp_core_id'] == 3) {
 			return $this->updateTimeAuth($check_admins, $temp_arr);
@@ -250,12 +239,15 @@ class Robokassa extends Model
 			break;
 			
 			case true: //  нашли юзера в базе
-				$days = $arr['days'];
-				$date_end = ($days == 0) ? $date_end = 0 : $date_end = $this->time + 3600 * 24 * $days;
+				$days 		= $arr['days'];
+				$date_end 	= ( $days == 0 ) ? 0 : $this->time + 3600 * 24 * $days;
 
 				$sql = DB::run('SELECT * FROM `'.$this->DB['prefix'].'_amxadmins` `t1` JOIN `'.$this->DB['prefix'].'_admins_servers` `t2` WHERE `t1`.`id` = ? AND `t1`.`id` = `t2`.`admin_id` LIMIT 1', [$arr['user_id']])->fetch(PDO::FETCH_ASSOC);
 
 				if(!$sql) die("Error: merchantModels / Robokassa / saveAuthUser: case true: sql error\n");
+
+				// обновление статуса платежа
+				DB::run('UPDATE `ez_buy_logs` SET `buy_status` = 1 WHERE `id` = ?', [ $arr['pay_id'] ]);
 
 				try {
 					DB::run('UPDATE `'.$this->DB['prefix'].'_amxadmins` SET `access` = ?, `created` = ?, `expired` = ?, `days` = ?, `tarif_id` = ? WHERE `id` = ?', [
@@ -275,10 +267,11 @@ class Robokassa extends Model
 	{
 		switch ($check_admins) {
 			case true:
-				$days = $arr['days'];
-				$date_end = ($days == 0) ? $date_end = 0 : $date_end = $this->time + 3600 * 24 * $days;
+				$days 		= $arr['days'];
+				$date_end 	= ( $days == 0 ) ? 0 : $this->time + 3600 * 24 * $days;
 
-				// die();
+				// обновление статуса платежа
+				DB::run('UPDATE `ez_buy_logs` SET `buy_status` = 1 WHERE `id` = ?', [ $arr['pay_id'] ]);
 
 				if( $date_end == 0 )
 				{
@@ -330,6 +323,9 @@ class Robokassa extends Model
 		$ban_id 	= $post['InvId'];
 
 		if ( $amount != $price ) die("Error: merchantModels / Robokassa / unBan: fake amount! Ban ID: $ban_id. amount: $amount, price: $price");
+
+		// обновление статуса платежа
+		DB::run('UPDATE `ez_buy_logs` SET `buy_status` = 1 WHERE `id` = ?', [ $ban_id ]);
 
 		try {
 			DB::run("UPDATE `{$this->DB['prefix']}_bans` SET `ban_length` = -1 WHERE `bid` = ?", [ $ban_id ]);

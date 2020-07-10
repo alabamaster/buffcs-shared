@@ -115,14 +115,6 @@ class Admin extends Model
 		return $sql;
 	}
 
-	public function statusForViewBuyLogs($username, $password, $web_id)
-	{
-		// $password = md5($password);
-		$password = ($web_id == null) ? $password = md5($password) : $password = $password; 
-		$sql = DB::run('SELECT COUNT(id) FROM `'.$this->DB['prefix'].'_amxadmins` WHERE `username` = ? AND `password` = ?', [$username, $password])->fetchColumn();
-		return $sql;
-	}
-
 	public function defaultAddUser($post)
 	{
 		$username 	= ($post['type'] == 'a') ? $post['nickname'] : $post['steamid'];

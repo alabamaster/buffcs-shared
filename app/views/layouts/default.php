@@ -23,14 +23,6 @@
 
 		<!-- jquery -->
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-		
-		<?php if(
-			$this->route['controller'] == 'bans' && $this->route['action'] == 'index' || 
-			$this->route['controller'] == 'main' && $this->route['action'] == 'buyers'
-		):?>
-			<link rel="stylesheet" type="text/css" href="<?=$this->SITE_URL?>themes/DataTables/datatables.min.css"/>
-			<script type="text/javascript" src="<?=$this->SITE_URL?>themes/DataTables/datatables.min.js"></script>
-		<?php endif;?>
 
 		<title><?php echo $title; ?></title>
 	</head>

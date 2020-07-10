@@ -1,8 +1,6 @@
 <?php 
 namespace app\merchantModels;
 
-ini_set('display_errors', 1);
-
 require_once 'app/models/Sendmailer.php';
 
 use app\core\Model;
@@ -17,9 +15,6 @@ use PDO;
 
 class Freekassa extends Model
 {
-	// private $DB = [];
-	// private $DISC;
-	// private $FK;
 	private $MAILER;
 
 	// other models
@@ -29,11 +24,6 @@ class Freekassa extends Model
 	public function __construct()
 	{
 		parent::__construct();
-		// $this->DB = require 'app/configs/db.php';
-		// $this->time = time();
-
-		// $this->DISC = Config::get('DISC');
-		// $this->FK = Config::get('FK');
 
 		// other models
 		$this->MERCHANT = new Merchant;
@@ -78,11 +68,11 @@ class Freekassa extends Model
 			'email'		=> $temp['email'],
 			'browser'	=> $temp['browser'],
 			'ip'		=> $temp['ip'],
+			'pay_id'	=> $pay_id,
 		];
 
 		$info = DB::run('SELECT * FROM `ez_privileges` `t1` JOIN `ez_privileges_times` `t2` WHERE `t2`.`pid` = ? AND `t1`.`sid` = ? AND `t1`.`id` = ? AND `t2`.`time` = ? LIMIT 1', [ $temp_arr['tariff'], $temp_arr['server'], $temp_arr['tariff'], $temp_arr['days'] ])->fetch(PDO::FETCH_ASSOC);
 
-		// $price = ($this->DISC['active'] == 1) ? $price = Main::discount($info['price'], $this->DISC['discount']) : $price = $info['price'];
 		$price = $this->MERCHANT->resultAmountCalculate($info['price'], $info['sid'], $info['pid'], $temp_arr['browser'], $temp_arr['ip']);
 		
 		// проверка цены
@@ -97,27 +87,24 @@ class Freekassa extends Model
 			[$user, $temp_arr['pass_md5']])->fetch(PDO::FETCH_ASSOC);
 		
 		echo "OK$pay_id\n";
-		return $this->saveNewUser($check_admins, $temp_arr, $pay_id);
+		return $this->saveNewUser($check_admins, $temp_arr);
 	}
 
-	public function saveNewUser($check_admins, $arr, $pay_id)
+	public function saveNewUser($check_admins, $arr)
 	{
 		switch ($check_admins) {
 			case true: // нашли юзера в базе
 				die("Error: merchantModels / Freekassa / saveNewUser: user exist in database\n");
+
+				// saveAuthUser($check_admins, $arr)
+				// $this->saveAuthUser($check_admins, $arr);
 			break;
 			
 			case false: // не нашли юзера в базе
-				if ( $arr['days'] == 0 ) 
-				{
-					$date_end = 0;
-				} else {
-					$date_end = $this->time + 3600 * 24 * $arr['days'];
-				}
-
 				$days = $arr['days'];
 				$ashow = 1;
 				$static_ban = 'no';
+				$date_end = ( $days == 0 ) ? 0 : $this->time + 3600 * 24 * $days;
 
 				$reloadAdminsStatus = null;
 				$sendMailStatus = false;
@@ -129,6 +116,9 @@ class Freekassa extends Model
 
 				if( $arr['type'] != 0 && $arr['type'] != 'a' && $arr['type'] != 'ac' )
 					die("Error: merchantModels / Freekassa / saveNewUser: type error\n");
+
+				// обновление статуса платежа
+				DB::run('UPDATE `ez_buy_logs` SET `buy_status` = 1 WHERE `id` = ?', [ $arr['pay_id'] ]);
 				
 				//https://tproger.ru/translations/how-to-configure-and-use-pdo/#prepared_statements
 				DB::beginTransaction();
@@ -166,7 +156,7 @@ class Freekassa extends Model
 				}
 
 				// отправка почты
-				if ( $this->MAILER->newPaySuccessMessage($pay_id) ) {
+				if ( $this->MAILER->newPaySuccessMessage($arr['pay_id']) ) {
 					$sendMailStatus = true;
 				}
 
@@ -212,6 +202,7 @@ class Freekassa extends Model
 			'email'		=> $temp['email'],
 			'browser'	=> $temp['browser'],
 			'ip'		=> $temp['ip'],
+			'pay_id'	=> $pay_id,
 		];
 
 		$info = DB::run('SELECT * FROM `ez_privileges` `t1` JOIN `ez_privileges_times` `t2` WHERE `t2`.`pid` = ? AND `t1`.`sid` = ? AND `t1`.`id` = ? AND `t2`.`time` = ? LIMIT 1', [ $temp_arr['tariff'], $temp_arr['server'], $temp_arr['tariff'], $temp_arr['days'] ])->fetch(PDO::FETCH_ASSOC);
@@ -242,11 +233,14 @@ class Freekassa extends Model
 		switch ($check_admins) {
 			case false: // не нашли юзера в базе
 				die("Error: merchantModels / Freekassa / saveAuthUser: user no exist in database!\n");
+
+				// saveNewUser($check_admins, $arr)
+				// $this->saveNewUser($check_admins, $arr);
 			break;
 			
 			case true: //  нашли юзера в базе
 				$days 		= $arr['days'];
-				$date_end 	= ($days == 0) ? $date_end = 0 : $date_end = $this->time + 3600 * 24 * $days;
+				$date_end 	= ( $days == 0 ) ? 0 : $this->time + 3600 * 24 * $days;
 
 				$username 	= ($arr['type'] == 'a') ? $arr['nickname'] : $arr['steamid'];
 				$steamid 	= ($arr['type'] == 'a') ? $arr['nickname'] : $arr['steamid'];
@@ -255,6 +249,9 @@ class Freekassa extends Model
 				$sql = DB::run("SELECT * FROM `{$this->DB['prefix']}_amxadmins` `t1` JOIN `{$this->DB['prefix']}_admins_servers` `t2` WHERE `t1`.`id` = ? AND `t1`.`id` = `t2`.`admin_id` LIMIT 1", [ $arr['user_id'] ])->fetch(PDO::FETCH_ASSOC);
 
 				if(!$sql) die("Error: merchantModels / Freekassa / saveAuthUser: case true: sql error\n");
+
+				// обновление статуса платежа
+				DB::run('UPDATE `ez_buy_logs` SET `buy_status` = 1 WHERE `id` = ?', [ $arr['pay_id'] ]);
 
 				try {
 					DB::run("UPDATE {$this->DB['prefix']}_amxadmins SET username = ?, steamid = ?, nickname = ?, access = ?, created = ?, expired = ?, days = ?, tarif_id = ? WHERE id = ?", 
@@ -272,9 +269,10 @@ class Freekassa extends Model
 		switch ($check_admins) {
 			case true:
 				$days = $arr['days'];
-				$date_end = ($days == 0) ? $date_end = 0 : $date_end = $this->time + 3600 * 24 * $days;
+				$date_end = ( $days == 0 ) ? 0 : $this->time + 3600 * 24 * $days;
 
-				// die();
+				// обновление статуса платежа
+				DB::run('UPDATE `ez_buy_logs` SET `buy_status` = 1 WHERE `id` = ?', [ $arr['pay_id'] ]);
 
 				if( $date_end == 0 )
 				{
@@ -327,9 +325,12 @@ class Freekassa extends Model
 
 		if ( $amount != $price ) die("Error: merchantModels / Freekassa / unBan: fake amount! Ban ID: {$ban_id}\n");
 
+		// обновление статуса платежа
+		DB::run('UPDATE `ez_buy_logs` SET `buy_status` = 1 WHERE `id` = ?', [ $ban_id ]);
+
 		try {
 			DB::run("UPDATE `{$this->DB['prefix']}_bans` SET `ban_length` = -1 WHERE `bid` = ?", [ $ban_id ]);
-			echo "OK$pay_id\n";
+			echo "OK$ban_id\n";
 		} catch (Exception $e) {
 			echo 'Error: ' . $e->getMessage();
 		}
