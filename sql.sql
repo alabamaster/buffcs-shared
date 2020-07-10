@@ -43,7 +43,9 @@ CREATE TABLE `ez_buy_logs` (
   `ip` varchar(255) DEFAULT NULL,
   `vk` varchar(64) DEFAULT NULL,
   `email` varchar(64) DEFAULT NULL,
-  `created` int(11) NOT NULL
+  `created` int(11) NOT NULL,
+  `buy_status` tinyint(4) DEFAULT '0',
+  `buy_type` tinyint(4) DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
