@@ -125,128 +125,126 @@ use app\lib\DB;
 									<!-- Modal user edit -->
 									<div class="modal fade" id="user<?=$row['id']?>" tabindex="-1" role="dialog" aria-labelledby="user" aria-hidden="true">
 										<div class="modal-dialog" role="document">
-										<div class="modal-content">
-										<div class="modal-header">
-										<h5 class="modal-title" id="user">Изменить данные</h5>
-										<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-										<span aria-hidden="true">&times;</span>
-										</button>
-										</div>
-											<form action="<?=$this->SITE_URL?>buyers" method="POST">
-												<div class="modal-body" style="padding-top: 5px;padding-bottom: 5px;">
-													<div class="mess mess-error text-wrap text-center">Будьте внимательны при изменение данных!</div>
-													<div class="info">
-														<div class="row mb-1 border-bottom pb-2 pt-3 align-items-center">
-															<div class="col-md-9 border-right">
-																<div class="row">
-																	<div class="col-md-3">#ID</div>
-																	<div class="col-md-9"><?=$row['id']?></div>
+											<div class="modal-content">
+												<div class="modal-header">
+													<h5 class="modal-title" id="user">Изменить данные</h5>
+													<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+													<span aria-hidden="true">&times;</span>
+													</button>
+												</div>
+												<form action="#" class="m-1 d-flex bg-secondary p-1 rounded" method="POST">
+													<div>
+														<button type="submit" class="fc-button fc-button-orange"><i class="fa fa-trash"></i> Удалить</button>
+														<input type="hidden" name="deleteUser" value="<?=$row['id']?>">
+													</div>
+													<div class="d-flex align-items-center">
+														<span class="text-white pl-2">Удалить пользователя из БД навсегда</span>
+													</div>
+												</form>
+												<form action="<?=$this->SITE_URL?>buyers" method="POST">
+													<div class="modal-body" style="padding-top: 5px;padding-bottom: 5px;">
+														<div class="mess mess-error text-wrap text-center">Будьте внимательны при изменение данных!</div>
+														<div class="info">
+															<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
+																<div class="col-md-3">ID</div>
+																<div class="col-md-9"><?=$row['id']?></div>
+															</div>
+															<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
+																<div class="col-md-3">Показывать</div>
+																<div class="col-md-9">
+																	<select name="show" class="form-control form-control-sm">
+																		<?php if($row['ashow'] == 1):?>
+																			<option value="0">Скрыть</option>
+																			<option value="1" selected="">Показывать</option>
+																		<?php else:?>
+																			<option value="0" selected="">Скрыть</option>
+																			<option value="1">Показывать</option>
+																		<?php endif;?>
+																	</select>
 																</div>
 															</div>
-															<div class="col-md-3">
-																<!-- <button type="button" class="fc-button fc-button-orange" data-toggle="tooltip" data-placement="top" title="Удалить юзера из БД навсегда" id="<?php //echo $row['id']?>" onclick="deleteUser(this.id)"><i class="fa fa-trash"></i> Удалить</button> -->
-																<form action="#">
-																	<button type="submit" class="fc-button fc-button-orange" data-toggle="tooltip" data-placement="top" title="Удалить юзера из БД навсегда"><i class="fa fa-trash"></i> Удалить</button>
-																	<input type="hidden" name="deleteUser" value="<?=$row['id']?>">
-																</form>
+															<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
+																<div class="col-md-3">Ник</div>
+																<div class="col-md-9"><input class="form-control form-control-sm" type="text" name="nickname" value="<?=htmlspecialchars($row['nickname'])?>"></div>
 															</div>
-														</div>
-														<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
-															<div class="col-md-3">Показывать</div>
-															<div class="col-md-9">
-																<select name="show" class="form-control form-control-sm">
-																	<?php if($row['ashow'] == 1):?>
-																		<option value="0">Скрыть</option>
-																		<option value="1" selected="">Показывать</option>
+															<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
+																<div class="col-md-3">SteamID</div>
+																<div class="col-md-9"><input class="form-control form-control-sm" type="text" name="steamid" value="<?=htmlspecialchars($row['steamid'])?>"></div>
+															</div>
+															<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
+																<div class="col-md-3">Сервер</div>
+																<div class="col-md-9"><?=$main->getServerNameById($row['server_id'])?></div>
+															</div>
+															<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
+																<div class="col-md-3">Привилегия</div>
+																<div class="col-md-9"><?=$main->getPrivilegeNameById($row['tarif_id'])?></div>
+															</div>
+															<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
+																<div class="col-md-3">Email</div>
+																<div class="col-md-9"><input class="form-control form-control-sm" type="text" name="email" value="<?=htmlspecialchars($row['email'])?>"></div>
+															</div>
+															<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
+																<div class="col-md-3">VK</div>
+																<div class="col-md-9"><input class="form-control form-control-sm" type="text" name="vk" value="<?=htmlspecialchars($row['vk'])?>"></div>
+															</div>
+															<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
+																<div class="col-md-3">Тип</div>
+																<div class="col-md-9">
+																	<?php if($row['flags'] == 'a'):?>
+																		<select name="type" class="form-control form-control-sm">
+																			<option value="a" selected="">Ник + пароль</option>
+																			<option value="ac">SteamID + пароль</option>
+																		</select>
 																	<?php else:?>
-																		<option value="0" selected="">Скрыть</option>
-																		<option value="1">Показывать</option>
+																		<select name="type" class="form-control form-control-sm">
+																			<option value="ac" selected="">SteamID + пароль</option>
+																			<option value="a">Ник + пароль</option>
+																		</select>
 																	<?php endif;?>
-																</select>
+																</div>
 															</div>
-														</div>
-														<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
-															<div class="col-md-3">Ник</div>
-															<div class="col-md-9"><input class="form-control form-control-sm" type="text" name="nickname" value="<?=htmlspecialchars($row['nickname'])?>"></div>
-														</div>
-														<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
-															<div class="col-md-3">SteamID</div>
-															<div class="col-md-9"><input class="form-control form-control-sm" type="text" name="steamid" value="<?=htmlspecialchars($row['steamid'])?>"></div>
-														</div>
-														<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
-															<div class="col-md-3">Сервер</div>
-															<div class="col-md-9"><?=$main->getServerNameById($row['server_id'])?></div>
-														</div>
-														<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
-															<div class="col-md-3">Привилегия</div>
-															<div class="col-md-9"><?=$main->getPrivilegeNameById($row['tarif_id'])?></div>
-														</div>
-														<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
-															<div class="col-md-3">Email</div>
-															<div class="col-md-9"><input class="form-control form-control-sm" type="text" name="email" value="<?=htmlspecialchars($row['email'])?>"></div>
-														</div>
-														<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
-															<div class="col-md-3">VK</div>
-															<div class="col-md-9"><input class="form-control form-control-sm" type="text" name="vk" value="<?=htmlspecialchars($row['vk'])?>"></div>
-														</div>
-														<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
-															<div class="col-md-3">Тип</div>
-															<div class="col-md-9">
-																<?php if($row['flags'] == 'a'):?>
-																	<select name="type" class="form-control form-control-sm">
-																		<option value="a" selected="">Ник + пароль</option>
-																		<option value="ac">SteamID + пароль</option>
+															<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
+																<div class="col-md-3">Сервер</div>
+																<div class="col-md-9">
+																	<select name="server" class="form-control form-control-sm">
+																		<?php foreach ( $allServers as $s_val ):?>
+																			<?php if ( $s_val['id'] == $row['server_id'] ):?>
+																				<option value="<?=$s_val['id']?>" selected=""><?=$s_val['hostname']?></option>
+																			<?php else:?>
+																				<option value="<?=$s_val['id']?>"><?=$s_val['hostname']?></option>
+																			<?php endif;?>
+																		<?php endforeach;?>
 																	</select>
-																<?php else:?>
-																	<select name="type" class="form-control form-control-sm">
-																		<option value="ac" selected="">SteamID + пароль</option>
-																		<option value="a">Ник + пароль</option>
+																</div>
+															</div>
+															<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
+																<div class="col-md-3">Привилегия</div>
+																<div class="col-md-9">
+																	<?php $sql=DB::run('SELECT `name` FROM `ez_privileges` WHERE `id` = ?', [$row['tarif_id']])->fetch(PDO::FETCH_ASSOC);?>
+																	
+																	<select name="privilege" class="form-control form-control-sm">
+																		<?php if(!$sql):?>
+																			<option value="<?=$row['tarif_id']?>" selected="">Unknown</option>
+																		<?php endif;?>
+																		<?php foreach ( $allPrivileges as $p_val ):?>
+																			<?php if ( $p_val['id'] == $row['tarif_id'] ):?>
+																				<option value="<?=$p_val['id']?>" selected=""><?=$p_val['name']?></option>
+																			<?php else:?>
+																				<option value="<?=$p_val['id']?>"><?=$p_val['name']?></option>
+																			<?php endif;?>
+																		<?php endforeach;?>
 																	</select>
-																<?php endif;?>
-															</div>
-														</div>
-														<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
-															<div class="col-md-3">Сервер</div>
-															<div class="col-md-9">
-																<select name="server" class="form-control form-control-sm">
-																	<?php foreach ( $allServers as $s_val ):?>
-																		<?php if ( $s_val['id'] == $row['server_id'] ):?>
-																			<option value="<?=$s_val['id']?>" selected=""><?=$s_val['hostname']?></option>
-																		<?php else:?>
-																			<option value="<?=$s_val['id']?>"><?=$s_val['hostname']?></option>
-																		<?php endif;?>
-																	<?php endforeach;?>
-																</select>
-															</div>
-														</div>
-														<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
-															<div class="col-md-3">Привилегия</div>
-															<div class="col-md-9">
-																<?php $sql=DB::run('SELECT `name` FROM `ez_privileges` WHERE `id` = ?', [$row['tarif_id']])->fetch(PDO::FETCH_ASSOC);?>
-																
-																<select name="privilege" class="form-control form-control-sm">
-																	<?php if(!$sql):?>
-																		<option value="<?=$row['tarif_id']?>" selected="">Unknown</option>
-																	<?php endif;?>
-																	<?php foreach ( $allPrivileges as $p_val ):?>
-																		<?php if ( $p_val['id'] == $row['tarif_id'] ):?>
-																			<option value="<?=$p_val['id']?>" selected=""><?=$p_val['name']?></option>
-																		<?php else:?>
-																			<option value="<?=$p_val['id']?>"><?=$p_val['name']?></option>
-																		<?php endif;?>
-																	<?php endforeach;?>
-																</select>
+																</div>
 															</div>
 														</div>
 													</div>
-												</div>
-												<input type="hidden" name="user_id" value="<?=$row['id']?>">
-												<div class="modal-footer p-1">
-													<button type="button" class="fc-button fc-button-dark" data-dismiss="modal">Закрыть</button>
-													<button type="submit" class="fc-button fc-button-green"><i class="fa fa-floppy-o"></i> Сохранить</button>
-												</div>
-											</form>
-										</div>
+													<input type="hidden" name="user_id" value="<?=$row['id']?>">
+													<div class="modal-footer p-1">
+														<button type="button" class="fc-button fc-button-dark" data-dismiss="modal">Закрыть</button>
+														<button type="submit" class="fc-button fc-button-green"><i class="fa fa-floppy-o"></i> Сохранить</button>
+													</div>
+												</form>
+											</div>
 										</div>
 									</div>
 									<!-- // Modal user edit -->
