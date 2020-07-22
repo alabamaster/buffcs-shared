@@ -63,15 +63,15 @@ class Merchant extends Model
 	public function reloadAdmins($sid)
 	{
 		$query = DB::run('SELECT `address`, `rcon` FROM `'.$this->DB['prefix'].'_serverinfo` WHERE `id` = ?', [ $sid ]);
-		
-		if ( !$query->fetch() || empty($query->fetch()) ) {
+		$cs_server = $query->fetch();
+
+		if ( !$cs_server ) {
 			// die('Rcon not found for server where id: ' . $sid);
 			$this->error = 'Error (Incorrect Rcon password)';
 			return false;
 		}
 
 		try {
-			$cs_server = $query->fetch(PDO::FETCH_ASSOC);
 			$dataServer = explode(':', $cs_server['address']);
 			$ip = $dataServer[0];
 			$port = $dataServer[1];
