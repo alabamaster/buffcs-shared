@@ -4,6 +4,7 @@ namespace app\models;
 require_once 'app/models/Sendmailer.php';
 require_once 'app/lib/unitpay/UnitPay.php';
 require_once 'app/models/Main.php';
+require_once 'app/lib/GameQ/Autoloader.php';
 
 use app\core\Model;
 use app\core\Config;
@@ -17,6 +18,11 @@ use app\models\Admin;
 
 class Account extends Model
 {
+	public function getGameQ()
+	{
+		return $GameQ = new \GameQ\GameQ();
+	}
+
 	public function generateKey()
 	{
 		return password_hash('foiy57348y8B' . time() . 'sdo8e3rtg38gt39t987', PASSWORD_DEFAULT);
@@ -76,20 +82,24 @@ class Account extends Model
 
 	public function getServerDataById($sid)
 	{
-		// require_once '../lib/SourceQuery.php';
+		$GameQ = new \GameQ\GameQ();
+
 		// префикс исправить
 		$sql = DB::run('SELECT `id`, `address` FROM `'.$this->DB['prefix'].'_serverinfo` WHERE `id` = ?', [$sid])->fetch(PDO::FETCH_ASSOC);
 		list($ip, $port) = explode(":", $sql['address']);
+		$server = $ip . ':' . $port;
 
-		// ПОФИКСИТЬ ЧАСЫ В СПИСКЕ ИГРОКОВ
-		$sq = new SourceQuery($ip, $port);
-		$info  = $sq->getInfos();
-		$players = $sq->getPlayers();
+		$GameQ->addServer([
+			'type' => 'cs16',
+			'host' => $server,
+		]);
+		$results = $GameQ->process();
+		$result = $results[$server];
 
-		if ( !$info ) return false;
+		if ( !$result ) return false;
 
 		// map images
-		$url = "https://image.gametracker.com/images/maps/160x120/cs/" .$info['map']. ".jpg";
+		$url = "https://image.gametracker.com/images/maps/160x120/cs/" .$result['gq_mapname']. ".jpg";
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_HEADER, true);   
 		curl_setopt($ch, CURLOPT_NOBODY, true);    
@@ -104,8 +114,8 @@ class Account extends Model
 		$map_url = ($httpcode == 200) ? $url : 'https://image.gametracker.com/images/maps/160x120/nomap.jpg';
 
 		$data = [
-			'arr_info' 		=> $info,
-			'arr_players' 	=> $players,
+			'arr_info' 		=> $result,
+			'arr_players' 	=> $result['players'],
 			'map_url' 		=> $map_url,
 		];
 		return $data;

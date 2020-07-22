@@ -1,7 +1,7 @@
 <?php 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
 
 require_once 'db_class.php';
 require_once '../core/Model.php';
@@ -10,11 +10,15 @@ $cfg = require_once '../configs/main.php';
 $db = require_once '../configs/db.php';
 
 use app\lib\DB;
-use app\lib\SourceQuery;
+// use app\lib\SourceQuery;
 
 if ( $_SERVER['REQUEST_METHOD'] !== 'POST' ) {
 	die('method error');
 }
+
+// GameQ
+require_once('../lib/GameQ/Autoloader.php');
+$GameQ = new \GameQ\GameQ();
 
 session_start();
 
@@ -26,8 +30,6 @@ function discount($cost, $discount)
 
 function serverIp($ip, $port)
 {
-	// $ip = (string)$ip;
-	// $port = (string)$port;
 	if ( $port == '27015' ) return $ip;
 	return $ip . ':' . $port;
 }
@@ -105,30 +107,21 @@ switch ($case) {
 	break;
 
 	case '3': // мониторинг
-		require_once '../lib/SourceQuery.php';
 		$server_id = (int)$_POST['server_id'];
 		// префикс исправить
 		$sql = DB::run('SELECT `id`, `address` FROM `'.$db['prefix'].'_serverinfo` WHERE `id` = ? LIMIT 1', [ $server_id ])->fetch(PDO::FETCH_ASSOC);
 		list($ip, $port) = explode(":", $sql['address']);
+		$server = $ip . ':' . $port;
 
-		// ПОФИКСИТЬ ЧАСЫ В СПИСКЕ ИГРОКОВ
-		$sq = new SourceQuery($ip, $port);
-		$info  = $sq->getInfos();
-		$players = $sq->getPlayers();
-
-		if ( !$info ) 
-		{
-			$info = array(
-				'map' => '-/-', 
-				'name' => 'Сервер недоступен', 
-			);
-			$displayNone = 'class="d-none"';
-		} else {
-			$displayNone = '';
-		}
+		$GameQ->addServer([
+			'type' => 'cs16',
+			'host' => $server,
+		]);
+		$results = $GameQ->process();
+		$result = $results[$server];
 
 		// map images
-		$url = "https://image.gametracker.com/images/maps/160x120/cs/" .$info['map']. ".jpg";
+		$url = "https://image.gametracker.com/images/maps/160x120/cs/" .$result['gq_mapname']. ".jpg";
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_HEADER, true);   
 		curl_setopt($ch, CURLOPT_NOBODY, true);    
@@ -144,23 +137,22 @@ switch ($case) {
 		$mapimage = ($httpcode == 200) ? '<img id="mapImg" style="max-width: 136px;" class="mr-2 rounded" src="'.$url.'">' : '<img id="mapImg" style="max-width: 136px;" class="mr-2 rounded" src="https://image.gametracker.com/images/maps/160x120/nomap.jpg">';
 
 		?>
-			<div class="mess mess-ok d-flex animated zoomIn">
-				<div <?=$displayNone?>>
-					<?=$mapimage?>
-				</div>
+			<?php if($result['gq_online']):?>
+			<div class="d-flex animated zoomIn" style="padding: 5px;border: 1px solid #dadada;border-radius: 2px;color: #585858;">
+				<div><?=$mapimage?></div>
 				<div class="d-flex flex-column text-truncate">
-					<div><h6 class="m-0"><?=@$info['name']?></h6></div>
-					<div <?=$displayNone?> style="font-size: 14px;">
-						<i class="fa fa-picture-o" aria-hidden="true"></i> Карта <b><?=@$info['map']?></b>
+					<div><h6 class="m-0"><?=$result['hostname']?></h6></div>
+					<div style="font-size: 14px;">
+						<i class="fa fa-picture-o" aria-hidden="true"></i> Карта <b><?=$result['gq_mapname']?></b>, следующая карта <b><?=$result['amx_nextmap']?></b>
 					</div>
-					<div <?=$displayNone?> style="font-size: 14px;">
-						<i class="fa fa-user-o" aria-hidden="true"></i> Игроков <b><?=@$info['players']?>/<?=@$info['places']?></b>
+					<div style="font-size: 14px;">
+						<i class="fa fa-user-o" aria-hidden="true"></i> Игроков <b><?=$result['gq_numplayers']?>/<?=$result['gq_maxplayers']?></b>
 					</div>
-					<div <?=$displayNone?> style="font-size: 14px;">
+					<div style="font-size: 14px;">
 						<i class="fa fa-steam" aria-hidden="true"></i> 
-						<a href="steam://connect/<?=@$info['ip']?>:<?=@$info['port']?>" title="Подключиться"><?=serverIp($info['ip'], $info['port'])?></a>
+						<a href="<?=$result['gq_joinlink']?>" title="Подключиться"><?=serverIp($ip, $port)?></a>
 					</div>
-					<div <?=$displayNone?> style="font-size: 14px;">
+					<div style="font-size: 14px;">
 						<i class="fa fa-users" aria-hidden="true"></i> <a href="#" data-toggle="modal" data-target="#players">Список игроков</a>
 					</div>
 				</div>
@@ -169,14 +161,14 @@ switch ($case) {
 				<div class="modal-dialog modal-lg" role="document">
 					<div class="modal-content">
 						<div class="modal-header">
-							<h5 class="modal-title" id="players">Игроки: <?=$info['name']?></h5>
+							<h5 class="modal-title" id="players">Игроки: <?=$result['hostname']?></h5>
 							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 								<span aria-hidden="true">&times;</span>
 							</button>
 						</div>
 						<div class="modal-body">
 							<!-- table -->
-							<?php if( empty($players[0]) ):?>
+							<?php if( empty($result['players']) ):?>
 								<div class="text-center font-weight-bold text-secondary">Нет игроков</div>
 							<?php else:?>
 							<div class="table-responsive mb-0">
@@ -190,13 +182,14 @@ switch ($case) {
 										</tr>
 									</thead>
 									<tbody>
-									<?php foreach ($players as $row) {
+									<?php foreach ($result['players'] as $row) {
+										$timeInGame = floor($row['gq_time'] / 60) % 60;
 										echo '
 										<tr>
 											<th scope="row">'.$row['id'].'</th>
-											<td>'.htmlspecialchars($row['name']).'</td>
-											<td>'.$row['score'].'</td>
-											<td>'.secToStrDate($row['time']).'</td>
+											<td>'.htmlspecialchars($row['gq_name']).'</td>
+											<td>'.$row['gq_score'].'</td>
+											<td>'.secToStrDate($row['gq_time']).'</td>
 										</tr>
 										';
 									}?>
@@ -209,6 +202,9 @@ switch ($case) {
 					</div>
 				</div>
 			</div>
+			<?php else:?>
+				<div class="animated zoomIn mess mess-error"><span>Сервер недоступен</span></div>
+			<?php endif;?>
 		<?php
 	break;
 
