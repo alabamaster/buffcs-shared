@@ -39,5 +39,5 @@
 3. Если в папке куда вы планируете устанавить магазин, будет распалагаться csbans какая либо статистика и т.п. они перестанут работать, во избежания этого, установите магазин либо на пустой домен/поддомен либо в отдельную папку 
 
 #### - ДРУГОЕ -
-Если хотите из amx_amxadmins перенести все icq в amx_admins_servers в vk, выполните sql запрос:
-UPDATE amx_admins_servers t1 INNER JOIN amx_amxadmins t2 ON t1.admin_id = t2.id SET t1.vk = t2.icq
+Если хотите из amx_amxadmins перенести все icq в amx_admins_servers -> vk, выполните sql запрос:
+- UPDATE amx_admins_servers t1 INNER JOIN amx_amxadmins t2 ON t1.admin_id = t2.id SET t1.vk = t2.icq
