@@ -1,3 +1,4 @@
+<?php use app\core\Config;?>
 <nav class="navbar navbar-expand-lg nav-bg navbar-dark fixed-top box p-2 rounded-0" style="box-shadow: none;">
 	<a class="navbar-brand ml-5 mr-5" href="<?=$this->SITE_URL?>"><?=$this->SITE_NAME?></a>
 	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -28,7 +29,9 @@
 			</li>
 		</ul>
 	</div>
-	<?php if($this->route['controller'] == 'main' && $this->route['action'] == 'buy'):?>
-	<span id="fk-banner"><a href="//www.free-kassa.ru"><img src="https://www.free-kassa.ru/img/fk_btn/16.png" title="Бесплатный видеохостинг"></a></span>
+	<?php if( Config::get('FK')['active'] == 1 ):?>
+		<?php if($this->route['controller'] == 'main' && $this->route['action'] == 'buy'):?>
+		<span id="fk-banner"><a href="//www.free-kassa.ru"><img src="https://www.free-kassa.ru/img/fk_btn/16.png" title="Бесплатный видеохостинг"></a></span>
+		<?php endif;?>
 	<?php endif;?>
 </nav>

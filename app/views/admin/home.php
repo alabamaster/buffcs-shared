@@ -5,13 +5,14 @@
 			<div class="box">
 				<div class="buy-logs">
 					<h6>Лог покупок (последние 50)</h6>
-					<small class="text-muted">Сейчас <b><?=$countLogs?></b> записей</small>
+					<small class="text-muted">Кол-во записей сейчас: <b><?=$countLogs?></b></small>
 					<div class="table-responsive" style="max-height: 500px;">
 						<table class="table table-sm table-hover" style="font-size: 14px;">
 							<thead class="bg-secondary text-white">
 								<tr>
 									<td class="font-weight-bold">Ник/SteamId</td>
 									<td class="font-weight-bold text-center">Дата</td>
+									<td class="font-weight-bold text-center">Дни</td>
 									<td class="font-weight-bold text-center">Статус</td>
 									<td></td>
 								</tr>
@@ -22,11 +23,13 @@
 									$username = ($row['type'] == 'a') ? htmlspecialchars($row['nickname']) : htmlspecialchars($row['steamid']);
 									$typeBuy = ($row['type'] == 'a') ? 'Ник + пароль' : 'SteamID + пароль';
 									$buyStatus = ($row['buy_status'] == 1) ? '<span class="badge badge-success">Оплачено</span>' : '<span class="badge badge-dark">Ожидание</span>';
+									$days = ($row['days'] == 0) ? 'Навсегда' : htmlspecialchars($row['days']);
 							?>
 								<tr>
-									<td><?=$username?></td>
-									<td class="text-center"><?=date('d.m.Y в H:i', $row['created'])?></td>
-									<td class="text-center"><?=$buyStatus?></td>
+									<td><div class="d-inline-block text-truncate" style="position: absolute;"><?=$username?></div></td>
+									<td class="text-center"><?= date('d.m.Y в H:i', $row['created']) ?></td>
+									<td class="text-center"><?= $days ?></td>
+									<td class="text-center"><?= $buyStatus ?></td>
 									<td class="text-center"><a href="#" data-toggle="modal" data-target="#moreInfo<?=$row['table_id']?>">Подробнее</a></td>
 								</tr>
 						<!-- Modal -->
