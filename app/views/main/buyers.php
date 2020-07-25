@@ -56,7 +56,7 @@ use app\lib\DB;
 							<?php if( Config::get('ICONS') == 1 ):?>
 								<th class="text-center border-0 d-flex justify-content-center"><i class="fa fa-info"></i></th>
 							<?php endif;?>
-								<th class="border-0">Ник игрока</th>
+								<th class="border-0">Ник/SteamID</th>
 							<?php if( $main->getCountServers() > 1 ):?>
 								<th class="border-0">Сервер</th>
 							<?php endif;?>
@@ -73,6 +73,8 @@ use app\lib\DB;
 								$tarif = ($row['tarif_id'] == null || $row['tarif_id'] == 0) ? 'Unknown' : $main->getPrivilegeNameById($row['tarif_id']);
 								$bgred = ($row['expired'] < time() && $row['expired'] != 0) ? 'style="background-color: #fff9eb"' : '';
 								$vk = ($row['vk'] != null) ? '<span class="text-info"><a href="https://'.htmlspecialchars($row['vk']).'" target="_blank"><i class="fa fa-vk"></i></a></span>' : '<span class="text-secondary"><i class="fa fa-vk"></i></span>';
+
+								if ( in_array($row['tarif_id'], Config::get('HIDDEN_PRIV')) ) continue;
 						?>
 							<tr <?=$bgred?>>
 							<?php if(Config::get('ICONS') == 1):?>

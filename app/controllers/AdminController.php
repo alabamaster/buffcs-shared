@@ -125,7 +125,7 @@ class AdminController extends Controller
 
 			if( 
 				empty($username) || empty($_POST['password']) || empty($_POST['email']) || $_POST['server'] == 0 || 
-				empty($_POST['access']) || empty($_POST['days']) || empty($_POST['privilege'])
+				empty($_POST['access']) || $_POST['days'] == '' || empty($_POST['privilege'])
 			) {
 				$this->view->message('error', 'Заполните все поля с красной звёздочкой');
 			}
