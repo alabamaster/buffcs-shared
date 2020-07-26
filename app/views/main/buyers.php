@@ -128,11 +128,14 @@ use app\lib\DB;
 									<div class="modal fade" id="user<?=$row['id']?>" tabindex="-1" role="dialog" aria-labelledby="user" aria-hidden="true">
 										<div class="modal-dialog" role="document">
 											<div class="modal-content">
-												<div class="modal-header">
-													<h5 class="modal-title" id="user">Изменить данные</h5>
-													<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-													<span aria-hidden="true">&times;</span>
-													</button>
+												<div class="modal-header flex-column">
+													<div class="d-flex w-100">
+														<h5 class="modal-title" id="user">Изменить данные</h5>
+														<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+														<span aria-hidden="true">&times;</span>
+														</button>
+													</div>
+													<small class="d-block text-danger">Будьте внимательны при изменение данных!</small>
 												</div>
 												<form action="#" class="m-1 d-flex bg-secondary p-1 rounded" method="POST">
 													<div>
@@ -140,16 +143,17 @@ use app\lib\DB;
 														<input type="hidden" name="deleteUser" value="<?=$row['id']?>">
 													</div>
 													<div class="d-flex align-items-center">
-														<span class="text-white pl-2">Удалить пользователя из БД навсегда</span>
+														<span class="text-white pl-2">Удалить пользователя из БД навсегда (id <?=$row['id']?>)</span>
 													</div>
 												</form>
 												<form action="<?=$this->SITE_URL?>buyers" method="POST">
 													<div class="modal-body" style="padding-top: 5px;padding-bottom: 5px;">
-														<div class="mess mess-error text-wrap text-center">Будьте внимательны при изменение данных!</div>
 														<div class="info">
 															<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
-																<div class="col-md-3">ID</div>
-																<div class="col-md-9"><?=$row['id']?></div>
+																<div class="col-md-3">Пароль</div>
+																<div class="col-md-9">
+																	<input class="form-control form-control-sm" type="text" name="password" minlength="3" placeholder="Новый пароль или оставьте поле пустым" value="">
+																</div>
 															</div>
 															<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
 																<div class="col-md-3">Показывать</div>
@@ -205,7 +209,7 @@ use app\lib\DB;
 																	<?php endif;?>
 																</div>
 															</div>
-															<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
+															<div class="row mb-1 border-bottom pt-1 align-items-center">
 																<div class="col-md-3">Сервер</div>
 																<div class="col-md-9">
 																	<select name="server" class="form-control form-control-sm">
@@ -219,7 +223,7 @@ use app\lib\DB;
 																	</select>
 																</div>
 															</div>
-															<div class="row mb-1 border-bottom pb-2 pt-1 align-items-center">
+															<div class="row mb-1 pb-2 pt-1 align-items-center">
 																<div class="col-md-3">Привилегия</div>
 																<div class="col-md-9">
 																	<?php $sql=DB::run('SELECT `name` FROM `ez_privileges` WHERE `id` = ?', [$row['tarif_id']])->fetch(PDO::FETCH_ASSOC);?>

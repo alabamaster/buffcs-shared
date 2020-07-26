@@ -1,13 +1,19 @@
 <?php 
 namespace app\models;
 
-require_once 'app/models/Servers.php';
+// require_once 'app/models/Servers.php';
+
+// UnitPay
+require_once 'app/lib/unitpay/UnitPay.php';
 
 use app\core\Model;
 use app\core\View;
 use app\core\Config;
 use app\lib\DB;
+
 use app\models\Servers;
+use app\lib\UnitPay; // unitpay
+
 use PDO;
 use Exception;
 
@@ -99,6 +105,7 @@ class Bans extends Model
 		$pay_id		= $ban_id; // pay id = ban id
 		$shop		= $post['shop'];
 		$amount		= Config::get('BANS')['price'];
+		$desc 		= 'Unban player ID:' . $pay_id;
 
 		switch ($shop) {
 			case 'freekassa':
@@ -116,6 +123,13 @@ class Bans extends Model
 				$sign = md5("$mrh_login:$amount:$pay_id:$mrh_pass1:shp_core_id=unban");
 				$url = "$url?MrchLogin=$mrh_login&OutSum=$amount&InvId=$pay_id&SignatureValue=$sign&Culture=ru&Encoding=utf-8&shp_core_id=unban$test";
 				return $url;
+			break;
+
+			case 'unitpay':
+				$unitPay = new UnitPay($this->UP['domain'], $this->UP['secretKey']);
+				$url = $unitPay->form($this->UP['publicId'], $amount, $pay_id . '.0', $desc, $this->UP['currency']);
+				return $url;
+			break;
 
 			default:
 				die('models / bans / goPayUnban: shop error');

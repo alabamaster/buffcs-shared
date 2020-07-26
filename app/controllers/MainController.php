@@ -50,7 +50,6 @@ class MainController extends Controller
 		$vars = [
 			'url'			=> Config::get('SITEURL'),
 			'urlRules'		=> Config::get('RULES_URL'),
-			'shops'			=> $this->model->htmlSelectShops(),
 			'disc'			=> Config::get('DISC'),
 			'servers'		=> $this->model->getAllServers(),
 			'serversPromo'	=> $this->model->getAllServers(),

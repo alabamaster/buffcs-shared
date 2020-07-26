@@ -326,4 +326,27 @@ class UnitpayModel extends Model
 			break;
 		}
 	}
+
+	public function unBan($get)
+	{
+		if ( $_SERVER['REQUEST_METHOD'] !== 'GET' ) {
+			die('method error');
+		}
+
+		$params = $get['params'];
+
+		$price 		= Config::get('BANS')['price'];
+		$amount 	= $params['orderSum'];
+		$ban_id 	=  explode('.', $params['account']);
+
+		if ( $amount != $price ) {
+			print $this->UnitPay->getErrorHandlerResponse("MerchantModels / Unitpay / unBan: fake amount! Ban ID: " .$ban_id[0]. ". amount: $amount, price: $price");
+		}
+
+		try {
+			DB::run("UPDATE `{$this->DB['prefix']}_bans` SET `ban_length` = -1 WHERE `bid` = ?", [ $ban_id[0] ]);
+		} catch (Exception $e) {
+			echo 'Error: ' . $e->getMessage();
+		}
+	}
 }

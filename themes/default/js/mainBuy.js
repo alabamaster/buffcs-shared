@@ -3,7 +3,7 @@
 	const boxSteam 			= document.querySelector('#boxSteam');
 	const boxNickForSteam 	= document.querySelector('#boxNickForSteam');
 	const typeAccess 		= document.querySelector('#type');
-	let user 				= document.querySelector('#nickname');
+	// let user 				= document.querySelector('#nickname');
 	
 	const url = 'app/js_post/actionBuy.php';
 	const server 	= document.querySelector('#server');

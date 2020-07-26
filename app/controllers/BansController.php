@@ -62,6 +62,7 @@ class BansController extends Controller
 			'ban_cfg' 	=> Config::get('BANS'),
 			'fk_active' => Config::get('FK')['active'],
 			'rk_active' => Config::get('RK')['active'],
+			'up_active'	=> Config::get('UP')['active'],
 			'ban_price' => Config::get('BANS')['price'],
 			'currency' 	=> Config::get('DISC')['currency'],
 			'SERVERS'	=> $SERVERS,

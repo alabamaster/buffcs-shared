@@ -7,14 +7,9 @@ require_once 'app/models/Sendmailer.php';
 // UnitPay
 require_once 'app/lib/unitpay/UnitPay.php';
 
-// QIWI
-require_once 'app/lib/qiwi/BillPayments.php';
-require_once 'app/lib/qiwi/BillPaymentsException.php';
-
 use app\core\Model;
 use app\core\Config;
 
-use app\lib\Qiwi\Api\BillPayments;
 use app\lib\UnitPay; // unitpay
 use app\lib\DB;
 use PDO;
@@ -132,6 +127,7 @@ class Main extends Model
 			[$post['user_id']])->fetch(PDO::FETCH_ASSOC);
 
 		$username = ($post['type'] == 'a') ? $post['nickname'] : $post['steamid'];
+		$password = ($post['password'] == '') ? $password = null : md5($post['password']);
 
 		if ( !$sql ) {
 			$this->errro = 'Ошибка получения ID игрока';
@@ -166,6 +162,11 @@ class Main extends Model
 						[ $username, $username, $username, $post['user_id'] ]);
 				}
 			break;
+		}
+
+		// check password
+		if ( $password != $sql['password'] ) {
+			DB::run('UPDATE `'.$this->DB['prefix'].'_amxadmins` SET `password` = ? WHERE `id` = ?', [ $password, $post['user_id'] ]);
 		}
 
 		// check ashow
@@ -440,7 +441,7 @@ class Main extends Model
 		} 
 		elseif (isset($data['account'])) 
 		{
-			$core_id = false;
+			$core_id = 'unban';
 			$pay_id = explode('.', $data['account']);
 			$pay_id = $pay_id[0];
 		} 

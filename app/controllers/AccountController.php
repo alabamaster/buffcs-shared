@@ -21,7 +21,7 @@ class AccountController extends Controller
 			$this->arr = $_SESSION['account'];
 			if ( !$this->user_data = $this->model->getUserData($_SESSION['account']['username'], $_SESSION['account']['password']) ) {
 				if ( $this->model->authorizationExit($_SESSION['account']['id']) ) {
-					$this->location($this->SITE_URL);
+					$this->view->location($this->SITE_URL);
 				} else {
 					die("Error: user not found. send mail to admin. or go to home page\n");
 				}

@@ -23,6 +23,9 @@
 							<?php if($rk_active == 1):?>
 								<button class="dropdown-item" id="robokassa" onclick="goPayUnban(this.id)">Robokassa</button>
 							<?php endif;?>
+							<?php if($up_active == 1):?>
+								<button class="dropdown-item" id="unitpay" onclick="goPayUnban(this.id)">UnitPay</button>
+							<?php endif;?>
 						</div>
 					</div>
 					<?php endif;?>
