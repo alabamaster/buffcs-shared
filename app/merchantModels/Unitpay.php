@@ -111,7 +111,7 @@ class UnitpayModel extends Model
 				$days = $arr['days'];
 				$ashow = 1;
 				$static_ban = 'no';
-				$date_end = ( $days ) ? 0 : $this->time + 3600 * 24 * $days;
+				$date_end = ( $days == 0 ) ? 0 : $this->time + 3600 * 24 * $days;
 
 				$reloadAdminsStatus = null;
 				$sendMailStatus = false;
@@ -247,7 +247,7 @@ class UnitpayModel extends Model
 			
 			case true: //  нашли юзера в базе
 				$days = $arr['days'];
-				$date_end = ( $days ) ? 0 : $this->time + 3600 * 24 * $days;
+				$date_end = ( $days == 0 ) ? 0 : $this->time + 3600 * 24 * $days;
 
 				$sql = DB::run('SELECT * FROM `'.$this->DB['prefix'].'_amxadmins` `t1` JOIN `'.$this->DB['prefix'].'_admins_servers` `t2` WHERE `t1`.`id` = ? AND `t1`.`id` = `t2`.`admin_id` LIMIT 1', [$arr['user_id']])->fetch(PDO::FETCH_ASSOC);
 
@@ -278,7 +278,7 @@ class UnitpayModel extends Model
 		switch ($check_admins) {
 			case true:
 				$days = $arr['days'];
-				$date_end = ( $days ) ? 0 : $this->time + 3600 * 24 * $days;
+				$date_end = ( $days == 0 ) ? 0 : $this->time + 3600 * 24 * $days;
 
 				// обновление статуса платежа
 				DB::run('UPDATE `ez_buy_logs` SET `buy_status` = 1 WHERE `id` = ?', [ $arr['pay_id'] ]);
