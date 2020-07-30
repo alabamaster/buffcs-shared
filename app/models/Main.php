@@ -431,19 +431,19 @@ class Main extends Model
 	{
 		if(isset($data['MERCHANT_ORDER_ID'])) 
 		{
-			$core_id = $data['us_core_id'];
-			$pay_id = $data['MERCHANT_ORDER_ID'];
+			$core_id 	= $data['us_core_id'];
+			$pay_id 	= $data['MERCHANT_ORDER_ID'];
 		} 
 		elseif (isset($data['InvId'])) 
 		{
-			$core_id = $data['shp_core_id'];
-			$pay_id = $data['InvId'];
+			$core_id 	= $data['shp_core_id'];
+			$pay_id 	= $data['InvId'];
 		} 
 		elseif (isset($data['account'])) 
 		{
-			$core_id = 'unban';
-			$pay_id = explode('.', $data['account']);
-			$pay_id = $pay_id[0];
+			$exp_str 	= explode('.', $data['account']);
+			$pay_id 	= $exp_str[0];
+			$core_id 	= ( $exp_str[1] == 0 ) ? 'unban' : $exp_str[1];
 		} 
 		else 
 		{
@@ -455,14 +455,14 @@ class Main extends Model
 
 		$expired = ($logs['days'] == 0) ? 'Бессрочно' : 'через ' . $logs['days'] . ' дн.';
 
-		$data = [
+		$arr = [
 			'id' 		=> $logs['id'],
 			'tariff' 	=> $tariff['name'],
 			'expired' 	=> $expired,
 			'core_id'	=> $core_id,
 			'pay_id'	=> $pay_id,
 		];
-		return $data;
+		return $arr;
 	}
 
 	public function payError($data)

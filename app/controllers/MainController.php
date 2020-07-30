@@ -65,7 +65,6 @@ class MainController extends Controller
 		$SERVERS = new Servers;
 
 		// class Paginator
-		// разобраться здесь, тотал должен адоптироваться под гет параметры, поиска, и ид севрера
 		$p_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 		$p_perPage = 10;
 		$request = $this->model->sqlRequest($_GET, $p_page, $p_perPage);
@@ -94,9 +93,8 @@ class MainController extends Controller
 			'buyers' 		=> $this->model->getBuyers(),
 			'allServers'	=> $this->model->getAllServers(),
 			'allPrivileges'	=> $this->model->getAllPrivileges(),
-			// 'pagination'	=> $sendData,
 			'paginator'		=> $P_PAGINATOR,
-			'data'			=> /*$p_data['answer']*/$request['sql'],
+			'data'			=> $request['sql'],
 			'dataTotalRows'	=> $p_total,
 		];
 		$this->view->render($this->SITE_NAME . ' - Покупатели', $vars);
@@ -104,33 +102,18 @@ class MainController extends Controller
 
 	public function successAction()
 	{
-		if ( !empty($_POST) ) 
+		if ( !empty($_REQUEST) ) 
 		{
-			$data = $this->model->paySuccess($_POST);
+			$data = $this->model->paySuccess($_REQUEST);
 
-			if ( $data['core_id'] == 'unban' ) {
+			if ( $data['core_id'] === false || $data['core_id'] == 'unban' ) {
 				$this->view->redirect($this->SITE_URL . 'bans/ban' . $data['pay_id']);
 			}
 			
 			$vars = [
-				'data' => $this->model->paySuccess($_POST),
+				'data' => $this->model->paySuccess($_REQUEST),
 			];
 			$this->view->render(Config::get('NAME') . ' - Success', $vars);
-		} elseif ( !empty($_GET) ) 
-		{
-			$data = $this->model->paySuccess($_GET);
-
-			if ( $data['core_id'] == 'unban' ) {
-				$this->view->redirect($this->SITE_URL . 'bans/ban' . $data['pay_id']);
-			}
-
-			$vars = [
-				'data' => $this->model->paySuccess($_GET),
-			];
-			$this->view->render(Config::get('NAME') . ' - Success', $vars);
-		}
-		else {
-			$this->view->redirect($this->SITE_URL);
 		}
 	}
 
