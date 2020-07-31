@@ -59,6 +59,11 @@ return [
 		'controller'=> 'admin',
 		'action' => 'infoprivileges',
 	],
+	'admin/amxadmins' => [
+		'controller' => 'admin',
+		'action' => 'amxadmins',
+	],
+
 	'admin/exit' => [
 		'controller'=> 'admin',
 		'action' => 'exit',

@@ -122,7 +122,12 @@
 	const search 		= getParameterByName('search');
 
 	selectServer.addEventListener('change', (e) => {
-		let searchParams = new URLSearchParams(window.location.search);
+		const searchParams = new URLSearchParams(window.location.search);
+		const curPage = getParameterByName('page');
+
+		if ( curPage > 1 ) {
+			searchParams.set('page', 1);
+		}
 
 		if ( server === null ) {
 			searchParams.append('server', e.target.value);

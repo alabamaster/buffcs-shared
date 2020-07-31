@@ -22,6 +22,9 @@
 					<a class="nav-link" href="<?=$this->SITE_URL?>admin/infoprivileges">Инфо привилегии</a>
 				</li>
 				<li class="nav-item">
+					<a class="nav-link" href="<?=$this->SITE_URL?>admin/amxadmins">Все игроки</a>
+				</li>
+				<li class="nav-item">
 					<a class="nav-link text-warning" href="<?=$this->SITE_URL?>admin/exit">Выйти</a>
 				</li>
 			</ul>

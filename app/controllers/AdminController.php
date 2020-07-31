@@ -113,10 +113,6 @@ class AdminController extends Controller
 
 	public function adduserAction()
 	{
-		// if ( !isset($_SESSION['admin']) ) {
-		// 	$this->view->location('/admin/login');
-		// }
-
 		if ( !empty($_POST) ) 
 		{
 			$MAIN = new Main;
@@ -207,6 +203,32 @@ class AdminController extends Controller
 			'privileges' => $this->model->getAllPrivileges(),
 		];
 		$this->view->render($this->SITE_NAME . ' - Инфо привилегии', $vars);
+	}
+
+	public function amxadminsAction()
+	{
+		if ( !empty($_POST) ) 
+		{
+			// меняем флаги доступа
+			if ( isset($_POST['changeAccess']) ) {
+				if ( !$this->model->changeAccess($_POST) ) {
+					$this->view->message('error', 'Ошибка обновления флагов доступа');
+				}
+				$this->view->reload();
+			}
+
+			if ( strlen($_POST['username']) < 3 || strlen($_POST['username']) > 30 ) {
+				$this->view->message('error', 'Введите от 3 до 30 символов');
+				return false;
+			}
+			if ( !$this->model->searchAmxadmins($_POST['username']) ) {
+				$this->view->message('error', 'Игрок с такими данными не найден');
+				return false;
+			}
+
+			return $this->view->adminAmxadmins($this->model->searchAmxadmins($_POST['username']));
+		}
+		$this->view->render($this->SITE_NAME . ' - Все игроки', $vars);
 	}
 
 	public function exitAction()

@@ -6,6 +6,7 @@ use app\core\Config;
 use app\core\View;
 
 use app\models\Main;
+use app\models\Servers;
 
 class AccountController extends Controller
 {
@@ -105,12 +106,19 @@ class AccountController extends Controller
 		}
 
 		// изменить данные
-		if ( !empty($_POST) && isset($_POST['main-settings']) ) {
+		if ( !empty($_POST) && isset($_POST['main-settings']) ) 
+		{
+			$SERVERS = new Servers;
+
+			if ( $_POST['type'] == 'ac' ) {
+				if ( !$SERVERS->checkSteamId($_POST['steamid']) ) {
+					$this->view->message('error', 'Введите валидный SteamID или обратитесь к администрации');
+				}
+			}
+
 			if ( !$this->model->changeSettings($_POST, $_SESSION['account']) ) {
 				$this->view->message('error', $this->model->error);
 			}
-			// $this->view->message('success', 'return true');
-			// $this->view->location($this->SITE_URL . 'account/profile/edit');
 			$this->view->reload();
 		}
 
@@ -118,7 +126,6 @@ class AccountController extends Controller
 			'server'	=> $this->model->getServerNameById($this->user_data['server_id']),
 			'tariff'	=> $this->model->getTariffNameById($this->user_data['tarif_id']),
 			'myserver' 	=> $this->model->getServerDataById($this->user_data['server_id']),
-			// 'arr'		=> $this->model->amxxDataServer($_SESSION['account']),
 			'user_data' => $this->user_data,
 		];
 		$this->view->render($_SESSION['account']['username'], $vars);
@@ -170,13 +177,9 @@ class AccountController extends Controller
 				return false;
 			}
 			$this->view->location($this->SITE_URL . 'account/profile/change');
-			// $this->view->location(Config::get('SITEURL') . 'account/profile/change');
-			// $this->view->message('success', 'Все окей.');
-			// return true;
 		}
 
 		$vars = [
-			// 'arr'			=> $this->model->amxxDataServer($_SESSION['account']),
 			'user_data' 	=> $this->user_data,
 			'currentInfo'	=> $this->model->getInfoCurrentPrivilege($this->user_data['expired'], $this->user_data['tarif_id']),
 			'server'		=> $this->model->getServerNameById($this->user_data['server_id']),
@@ -195,7 +198,6 @@ class AccountController extends Controller
 		if ( !empty($_POST) ) 
 		{
 			// промокод
-			// промокод
 			if ( isset($_POST['thisPromoCode']) ) 
 			{
 				if ( !$this->MAIN->checkStatusPromocode($_POST) ) {
@@ -212,7 +214,6 @@ class AccountController extends Controller
 		}
 
 		$vars = [
-			// 'arr'		=> $this->model->amxxDataServer($_SESSION['account']),
 			'user_data' => $this->user_data,
 			'servers' 	=> $this->MAIN->getAllServers(),
 			'server'	=> $this->model->getServerNameById($this->user_data['server_id']),
@@ -242,7 +243,6 @@ class AccountController extends Controller
 			$this->view->location(strval($this->MAIN->letsGoPay($post, $user,  $_POST['updateUserTime'])));
 		}
 		$vars = [
-			// 'arr'		=> $this->model->amxxDataServer($_SESSION['account']),
 			'user_data' => $this->user_data,
 			'server'	=> $this->model->getServerNameById($this->user_data['server_id']),
 			'tariff'	=> $this->model->getTariffNameById($this->user_data['tarif_id']),
@@ -256,7 +256,16 @@ class AccountController extends Controller
 
 	public function resetAction()
 	{
-		if ( !empty($_POST) ) {
+		if ( !empty($_POST) ) 
+		{
+			if ( strlen($_POST['email']) < 3 || strlen($_POST['email']) > 30 ) {
+				$this->view->message('error', 'Длина адреса почты должна быть от 3 до 30 символов');
+				return false;
+			}
+			if ( !filter_var($_POST['email'], FILTER_VALIDATE_EMAIL) ) {
+				$this->view->message('error', 'Адрес почты указан не верно');
+				return false;
+			}
 			if ( !$this->model->resetPassword($_POST['email']) ) {
 				$this->view->message('error', $this->model->error);
 			}

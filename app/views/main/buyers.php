@@ -68,7 +68,7 @@ use app\lib\DB;
 						</thead>
 						<tbody class="tr-hover-effect">
 						<?php 
-							foreach (/*$pagination['answer']*/$data as $row):
+							foreach ($data as $row):
 								$expired = ($row['expired'] == 0) ? 'Никогда' : date('d.m.Y', $row['expired']);
 								$tarif = ($row['tarif_id'] == null || $row['tarif_id'] == 0) ? 'Unknown' : $main->getPrivilegeNameById($row['tarif_id']);
 								$bgred = ($row['expired'] < time() && $row['expired'] != 0) ? 'style="background-color: #fff9eb"' : '';
@@ -315,26 +315,13 @@ use app\lib\DB;
 		}
 	});
 
-	// filterServer.addEventListener('change', (e) => 
-	// {
-	// 	if ( getParameterByName('server') !== null ) // в юрл уже есть сервер ид
-	// 	{
-	// 		const urlPage 	= mainUrl + 'buyers';
-	// 		const urlEdit 	= urlPage.split( '?' )[0]; // очищаем юрл от параметров ?...
-	// 		const urlNew 	= `${urlEdit}?server=${e.target.value}`; // добавляем сервер в юрл
-	// 		// console.log(urlPage, urlEdit, urlNew);
-	// 		window.location.href = urlNew; // редирект
-	// 	} else { // в юрл еще нет сервер ид
-	// 		const urlStart 	= mainUrl + 'buyers';
-	// 		const urlEdit 	= urlStart.split( '?' )[0];
-	// 		const urlNew 	= `${urlEdit}?server=${e.target.value}`
-	// 		// console.log(urlStart, urlEdit, urlNew);
-	// 		window.location.href = urlNew; // редирект
-	// 	}
-	// });
-
 	filterServer.addEventListener('change', (e) => {
-		let searchParams = new URLSearchParams(window.location.search);
+		const searchParams = new URLSearchParams(window.location.search);
+		const curPage = getParameterByName('page');
+
+		if ( curPage > 1 ) {
+			searchParams.set('page', 1);
+		}
 
 		if ( server === null ) {
 			searchParams.append('server', e.target.value);

@@ -1,4 +1,5 @@
 <div class="container">
+	<div class="mess mess-error w-100 mb-2">Включены тестовые платежи через Freekassa и Robokassa</div>
 	<div class="row mx-md-n1">
 		<div class="col-lg-5 px-md-1">
 			<div class="box">

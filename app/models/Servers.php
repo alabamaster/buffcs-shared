@@ -26,6 +26,17 @@ class Servers extends Model
 		return $ip . ':' . $port;
 	}
 
+	public function checkSteamId($steamid)
+	{
+		$steam = '/^STEAM_[0-9]:[0-9]:\d+$/';
+		$steam_preg = preg_match($steam, $steamid, $matches, PREG_OFFSET_CAPTURE, 0);
+
+		$valve = '/^VALVE_[0-9]:[0-9]:\d+$/';
+		$valve_preg = preg_match($valve, $steamid, $matches, PREG_OFFSET_CAPTURE, 0);
+
+		return $result = ( $steam_preg == 1 || $valve_preg == 1 ) ? true : false;
+	}
+
 
 	public function getCountAllServers()
 	{

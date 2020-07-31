@@ -610,7 +610,7 @@ class Main extends Model
 				SELECT * FROM `{$this->DB['prefix']}_amxadmins` `t1` JOIN `{$this->DB['prefix']}_admins_servers` `t2` 
 				WHERE `t2`.`server_id` = ? AND `t1`.`id` = `t2`.`admin_id` 
 				AND (`t1`.`tarif_id` != 0 OR `t1`.`tarif_id` != NULL) $notAdmin $sortSQL $orderSQL", [ $serverID ]);
-			$a = 1;
+			// $a = 1;
 		}
 
 		if ( $serverID === false && $search !== false ) { // только поиск
@@ -624,7 +624,7 @@ class Main extends Model
 				SELECT * FROM `{$this->DB['prefix']}_amxadmins` `t1` JOIN `{$this->DB['prefix']}_admins_servers` `t2` 
 				WHERE `t1`.`username` LIKE ? AND `t1`.`id` = `t2`.`admin_id` 
 				AND (`t1`.`tarif_id` != 0 OR `t1`.`tarif_id` != NULL) $notAdmin $sortSQL $orderSQL", [ $search ]);
-			$a = 2;
+			// $a = 2;
 		}
 
 		if ( $serverID && $search ) { // сервер и поиск
@@ -638,7 +638,7 @@ class Main extends Model
 				SELECT * FROM `{$this->DB['prefix']}_amxadmins` `t1` JOIN `{$this->DB['prefix']}_admins_servers` `t2` 
 				WHERE `t2`.`server_id` = ? AND `t1`.`username` LIKE ? AND `t1`.`id` = `t2`.`admin_id` 
 				AND (`t1`.`tarif_id` != 0 OR `t1`.`tarif_id` != NULL) $notAdmin $sortSQL $orderSQL", [ $serverID, $search ]);
-			$a = 3;
+			// $a = 3;
 		}
 
 		if ( !isset($querySQL) ) {
@@ -654,7 +654,7 @@ class Main extends Model
 				WHERE `t1`.`id` = `t2`.`admin_id` 
 				AND (`t1`.`tarif_id` != 0 OR `t1`.`tarif_id` != NULL) $notAdmin $sortSQL $orderSQL
 			");
-			$a = 4;
+			// $a = 4;
 		}
 
 		// var_dump($a);

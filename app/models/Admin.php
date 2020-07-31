@@ -141,6 +141,25 @@ class Admin extends Model
 		return false;
 	}
 
+	public function searchAmxadmins($username)
+	{
+		$username = '%' . $username . '%';
+
+		$query = DB::run("
+			SELECT * FROM `{$this->DB['prefix']}_amxadmins` 
+			WHERE `username` LIKE ?
+			ORDER BY `id`", [ $username ])->fetchAll();
+
+		return $arr = (empty($query)) ? false : $query;
+	}
+
+	public function changeAccess($post)
+	{
+		$update = DB::run("UPDATE `{$this->DB['prefix']}_amxadmins` SET `access` = ? WHERE `id` = ?", [ $post['newAccess'], $post['uid'] ]);
+
+		return $result = ($update) ? true : false;
+	}
+
 	public function countBuyLogs()
 	{
 		$sql = DB::run('SELECT `id` FROM `ez_buy_logs`')->rowCount();

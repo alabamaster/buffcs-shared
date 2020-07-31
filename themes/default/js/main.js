@@ -33,7 +33,6 @@ document.addEventListener('DOMContentLoaded', () =>
 			processData: false,
 
 			success: function(result) {
-				console.log(result);
 				json = jQuery.parseJSON(result);
 				
 				if(json.url) {

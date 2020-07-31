@@ -61,4 +61,9 @@ class View
 	{
 		exit(json_encode(['url' => $url]));
 	}
+
+	public function adminAmxadmins($data) 
+	{
+		exit(json_encode(['adminAmxadmins' => true, 'data' => $data]));
+	}
 }

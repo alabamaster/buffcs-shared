@@ -16,6 +16,7 @@ return [
 		'home',
 		'promo',
 		'infoprivileges',
+		'amxadmins',
 		'exit',
 	],
 ];

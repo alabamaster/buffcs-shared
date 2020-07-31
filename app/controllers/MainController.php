@@ -26,8 +26,15 @@ class MainController extends Controller
 
 	public function buyAction()
 	{
+		$SERVERS = new Servers;
+
 		if ( !empty($_POST) ) 
 		{
+			if ( $_POST['type'] == 'ac' ) {
+				if ( !$SERVERS->checkSteamId($_POST['steamid']) ) {
+					$this->view->message('error', 'Введите валидный SteamID или обратитесь к администрации');
+				}
+			}
 			// промокод
 			if ( isset($_POST['thisPromoCode']) ) 
 			{
@@ -73,7 +80,9 @@ class MainController extends Controller
 
 		$P_PAGINATOR = new Paginator($p_page, $p_perPage, $p_total);
 
-		if ( $p_page >= 2 && $p_total < $p_perPage ) $this->view->redirect($this->SITEURL . 'buyers?page=1');
+		if ( $p_page >= 2 && $p_total < $p_perPage ) {
+			$this->view->redirect($this->SITEURL . 'buyers?page=1');
+		}
 
 		if ( !empty($_POST) && isset($_SESSION['admin']) ) 
 		{
