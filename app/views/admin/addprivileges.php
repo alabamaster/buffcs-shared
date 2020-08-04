@@ -12,7 +12,7 @@ require_once 'navbar.php';
 		</div>
 		<?php endif;?>
 	<?php endif;?>
-	<div class="row mx-md-n1" <?php if( !is_writable('icons') ) echo 'style="pointer-events: none;filter: blur(1px);"';?>>
+	<div class="row mx-md-n1" <?php if( Config::get('ICONS') == 1 && !is_writable('icons') ) echo 'style="pointer-events: none;filter: blur(1px);"';?>>
 		<div class="col-lg-5 px-md-1">
 			<div class="box">
 				<form action="<?=$this->SITE_URL?>admin/addprivileges" method="POST" enctype="multipart/form-data">

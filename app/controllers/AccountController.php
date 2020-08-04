@@ -36,6 +36,10 @@ class AccountController extends Controller
 			$this->view->redirect($this->SITE_URL . 'account');
 		}
 
+		if ($route['action'] == 'update' && $this->user_data['expired'] == 0) {
+			$this->view->redirect($this->SITE_URL . 'account');
+		}
+
 		if ( $route['controller'] == 'account' && $route['action'] == 'login' ) {
 			$this->view->layout = 'accountLogin';
 		}

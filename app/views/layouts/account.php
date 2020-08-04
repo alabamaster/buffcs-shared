@@ -83,8 +83,12 @@ $MAIN = new Main;
 										</li>
 										<li class="li-profile-info">
 											<div class="li-title">Окончание</div>
-											<div class="li-data" data-toggle="tooltip" data-placement="bottom" title="<?=date('В H:i', $user_data['expired']);?>">
-												<?=Account::expired_time($user_data['expired']);?>
+											<div class="li-data" 
+												<?php if($user_data['expired'] != 0):?>
+													data-toggle="tooltip" data-placement="bottom" title="<?=date('В H:i', $user_data['expired']);?>"
+												<?php endif;?>
+											>
+												<span><?=Account::expired_time($user_data['expired']);?></span>
 											</div>
 										</li>
 									</ul>
@@ -112,9 +116,11 @@ $MAIN = new Main;
 								<a class="link-profile" href="<?=$this->SITE_URL?>account/profile/buy">
 									<i class="fa fa-usd" aria-hidden="true"></i> Купить новую
 								</a>
+								<?php if($user_data['expired'] != 0):?>
 								<a class="link-profile" href="<?=$this->SITE_URL?>account/profile/update">
 									<i class="fa fa-clock-o" aria-hidden="true"></i> Продлить
 								</a>
+								<?php endif?>
 							</div>
 						</div>
 					</div>
