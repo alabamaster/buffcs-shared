@@ -30,13 +30,13 @@
 								<div id="label" class="d-inline-block" style="margin-bottom: 0.5rem;">
 									<i class="fa fa-user-o"></i> Ник 
 								</div>
-								<input name="nickname" id="userName" type="text" class="form-control form-control-sm" placeholder="A-Z, a-z, 0-9" required="">
+								<input name="nickname" id="userName" data-toggle="tooltip" data-placement="top" title="Ваш ник в игре" type="text" class="form-control form-control-sm" placeholder="A-Z, a-z, 0-9" required="">
 							</div>
 						</div>
 						<div class="col">
 							<div class="form-group">
 								<label><i class="fa fa-lock"></i> Пароль</label>
-								<input name="password" id="password" type="text" class="form-control form-control-sm" required="" minlength="3" maxlength="20" placeholder="A-Z, a-z, 0-9">
+								<input name="password" id="password" data-toggle="tooltip" data-placement="top" title="Придумайте пароль для активации привилегии" type="text" class="form-control form-control-sm" required="" minlength="3" maxlength="20" placeholder="A-Z, a-z, 0-9">
 							</div>
 						</div>
 					</div>
