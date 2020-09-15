@@ -6,7 +6,7 @@
 				<div class="buy-logs">
 					<h6>Лог покупок (последние 50)</h6>
 					<small class="text-muted">Кол-во записей сейчас: <b><?=$countLogs?></b></small>
-					<div class="table-responsive" style="max-height: 500px;">
+					<div class="table-responsive" style="max-height: 500px; position: relative;">
 						<table class="table table-sm table-hover" style="font-size: 14px;">
 							<thead class="bg-secondary text-white">
 								<tr>
