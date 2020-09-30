@@ -51,7 +51,7 @@ require_once 'navbar.php';
 					<?php endif;?>
 					<div class="custom-control custom-checkbox mt-2">
 						<input type="checkbox" class="custom-control-input" name="active" id="active" value="0">
-						<label class="custom-control-label" for="active">Првилегия доступна для покупки</label>
+						<label class="custom-control-label" for="active">Привилегия доступна для покупки</label>
 					</div>
 					<button id="add" type="submit" class="fc-button fc-button-blue btn-block mt-2">Добавить</button>
 				</form>
@@ -137,7 +137,7 @@ require_once 'navbar.php';
 											<input type="text" class="form-control" id="p_access_<?=$row['id']?>" value="<?=$row['access']?>">
 										</div>
 										<div class="form-group">
-											<label>Првилегия доступна для покупки</label>
+											<label>Привилегия доступна для покупки</label>
 											<select class="form-control" id="p_active_<?=$row['id']?>">
 												<?php if($row['active'] == 1):?>
 													<option value="0">Нет</option>
