@@ -29,10 +29,8 @@ class AdminController extends Controller
 			{
 				$this->view->message('error', $this->model->error);
 			}
-			// $this->view->message('ok', 'vse oke');
+
 			$this->model->sessionGo();
-			// $_SESSION['admin'] = true;
-			// $this->view->redirect('/admin/home');
 			$this->view->location($this->SITE_URL . 'admin/home');
 		}
 		$this->view->render($this->SITE_NAME . ' - Login ACP');
@@ -100,7 +98,6 @@ class AdminController extends Controller
 				$this->view->message('error', $C_PRIVILEGES->error);
 			}
 			$this->view->reload();
-			// $this->view->message('success', 'ok');
 		}
 
 		$vars = [
@@ -228,7 +225,7 @@ class AdminController extends Controller
 
 			return $this->view->adminAmxadmins($this->model->searchAmxadmins($_POST['username']));
 		}
-		$this->view->render($this->SITE_NAME . ' - Все игроки', $vars);
+		$this->view->render($this->SITE_NAME . ' - Все игроки');
 	}
 
 	public function exitAction()
