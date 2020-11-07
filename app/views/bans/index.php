@@ -76,7 +76,7 @@
 								</td>
 								<td>
 									<div class="row">
-										<div class="col text-truncate" style="max-width: 250px;"><?=htmlspecialchars($row['admin_nick'])?></div>
+										<div class="col text-truncate" style="max-width: 220px;"><?=htmlspecialchars($row['admin_nick'])?></div>
 									</div>
 								</td>
 								<?php if( $count_serv > 1 ):?>
