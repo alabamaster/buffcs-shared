@@ -318,7 +318,7 @@ class Main extends Model
 			return true;
 		}
 
-		$sql = DB::run('SELECT COUNT(*) FROM `'.$this->DB['prefix'].'_amxadmins` `t1` JOIN `'.$this->DB['prefix'].'_admins_servers` `t2` WHERE `t1`.`username` = ? AND `t2`.`server_id` = ?', [$username, $post['server']])->fetchColumn();
+		$sql = DB::run('SELECT COUNT(*) FROM `'.$this->DB['prefix'].'_amxadmins` `t1` JOIN `'.$this->DB['prefix'].'_admins_servers` `t2` WHERE (`t1`.`username` = ? AND `t2`.`server_id` = ?) AND (`t1`.`id` = `t2`.`admin_id`)', [$username, $post['server']])->fetchColumn();
 		
 		if( $sql > 0 ) {
 			$this->error = 'Такой ник или SteamID уже занят, укажите другие данные!';

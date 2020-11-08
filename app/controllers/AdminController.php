@@ -125,11 +125,11 @@ class AdminController extends Controller
 
 			// проверка ника
 			if ( $MAIN->userExist($_POST) ) {
-				$this->view->message('error', 'Такой ник или стимайди уже занят');
+				$this->view->message('error', $MAIN->error);
 			}
 			// проверка почта
 			if ( $MAIN->emailExist($_POST['email']) ) {
-				$this->view->message('error', 'Такой Email уже занят');
+				$this->view->message('error', $MAIN->error);
 			}
 			// проверка вк
 			if ( mb_strlen($_POST['vk']) > 0 ) {
