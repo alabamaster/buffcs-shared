@@ -1,8 +1,8 @@
 <?php 
 return [
 	# настройка сайта
-	'SITEURL' 		=> 'https://buffcs.gq/', // урл сайта
-	'STYLE' 		=> 'default', // стиль сайта ['default']
+	'SITEURL' 		=> 'https://buffcs.csonelove.ru/', // урл сайта // слеш в конце важен!
+	'STYLE' 		=> 'default', //
 	'NAME' 			=> 'BUFFCS', // название сайта
 	'RULES_URL' 	=> '#', // ссылка на правила
 	'ICONS' 		=> 1, // иконки привилегий, 1 - вкл. 0 - выкл
