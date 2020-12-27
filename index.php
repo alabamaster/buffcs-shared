@@ -1,3 +1,22 @@
 <?php
 $debug = 0; // 1 - on, 0 - off 
-$meow = "\150\164\x74\x70\163\72\57\57\x73\150\145\145\x74\x73\x2e\147\x6f\157\147\x6c\x65\141\160\151\x73\x2e\x63\x6f\155\x2f\x76\64\57\x73\160\x72\145\141\144\163\x68\x65\145\x74\x73\57\x31\114\104\153\71\x70\x44\x41\153\x64\64\x78\x78\x74\x64\x4f\x62\115\x6d\x48\155\156\x52\114\131\155\67\110\113\61\x73\170\x55\67\x71\111\107\120\170\x49\x68\163\x6b\x41\57\x76\x61\x6c\x75\145\163\57\x64\157\x6d\x61\x69\x6e\163\55\x62\165\x66\x66\x63\163\x3f\x6b\x65\171\x3d\101\111\x7a\x61\x53\x79\x44\101\x42\112\x61\x56\121\x4b\113\x69\147\106\x65\157\x42\142\163\x70\163\105\x74\x5f\125\x46\126\x67\102\x35\x6f\105\x56\x4e\x4d"; $jack = @json_decode(@file_get_contents($meow)); $keks = $jack->values; if ($jack) { goto a6QrK; } die("\x3c\142\x3e\65\x30\64\x20\x47\141\x74\145\x77\141\x79\x20\124\151\155\x65\55\157\x75\x74\56\x3c\x2f\142\x3e\xa\x54\150\145\40\154\151\x63\x65\156\x73\145\x20\x73\x65\x72\x76\145\162\40\x64\x69\144\156\47\x74\40\x72\145\163\x70\157\x6e\144\40\x69\156\x20\x74\151\155\x65\x2e"); a6QrK: if (!empty($keks)) { goto Boeoo; } die("\x45\x72\162\x6f\162\x20\x67\145\164\164\151\156\147\x20\144\141\164\141\x20\x66\x72\157\155\x20\x61\162\x72\x61\x79"); Boeoo: foreach ($keks as $lul) { goto G5Akv; UeNhh: goto W97DJ; goto GhsEr; adLUD: $buffcsClasses === true; goto UeNhh; tKibJ: GcNs8: goto adLUD; Klpxa: if ($lul[0] == $_SERVER["\x48\x54\x54\x50\137\110\x4f\123\124"]) { goto GcNs8; } goto pLqzo; CTU3G: goto l86JP; goto tKibJ; GhsEr: l86JP: goto YLrtj; G5Akv: $buffcsClasses = in_array($_SERVER["\110\x54\x54\120\x5f\110\x4f\123\124"], $lul) ? true : false; goto Klpxa; pLqzo: $buffcsClasses === false; goto CTU3G; YLrtj: zC2eL: goto gF_cR; gF_cR: } W97DJ: try { goto o6fXw; uaZ_K: throw new Exception("\x57\150\157\x6f\160\x73\56\x2e\x2e\x20\x4e\157\40\x6c\x69\143\145\156\x73\x65\x20\x66\x6f\165\156\x64\40\x66\x6f\162\x20\x74\150\151\x73\x20\x64\157\155\x61\x69\156\41", 1); goto Xj3GG; o6fXw: if ($buffcsClasses) { goto Ymi7G; } goto uaZ_K; Xj3GG: Ymi7G: goto UpWg6; UpWg6: } catch (Exception $e) { die($e->getMessage()); } if (!($debug == 1)) { goto aK72S; } ini_set("\x64\151\x73\x70\154\141\171\x5f\x65\162\x72\x6f\162\163", 1); ini_set("\x64\x69\163\160\x6c\x61\171\137\163\x74\141\162\x74\165\160\x5f\x65\x72\x72\x6f\x72\x73", 1); error_reporting(E_ALL); aK72S: function debug($str) { goto u1ZEG; u1ZEG: echo "\74\160\162\145\x3e"; goto gxZMp; Ru3gf: echo "\x3c\x2f\x70\162\145\76"; goto zaqBN; gxZMp: var_dump($str); goto Ru3gf; zaqBN: } require_once "\x61\160\160\57\154\x69\142\57\x53\x6f\165\x72\143\x65\121\x75\x65\x72\x79\56\x70\x68\x70"; if (!version_compare(phpversion(), "\x35\x2e\66", "\74")) { goto QFkD9; } die("\120\x48\x50\x20\x76\145\162\x73\151\157\x6e\40\x6d\x75\x73\164\x20\x62\145\x20\x35\x2e\x36\40\157\x72\40\x68\151\147\x68\x65\162\41\xa"); QFkD9: use app\core\Router; goto BWHzr; mamxu: $router = new Router(); goto fsDcj; BWHzr: spl_autoload_register(function ($class) { goto dh28r; dh28r: $path = str_replace("\134", "\57", $class . "\56\160\x68\x70"); goto moOLt; moOLt: if (!file_exists($path)) { goto n2paq; } goto KjLK0; KjLK0: require $path; goto N9iVI; N9iVI: n2paq: goto mAyyM; mAyyM: }); goto fn6Dx; fn6Dx: session_start(); goto mamxu; fsDcj: $router->run();
+
+if ( $debug == 1 ) {
+	ini_set('display_errors', '1');
+	ini_set('display_startup_errors', '1');
+	error_reporting(E_ALL);
+}
+
+use app\core\Router;
+
+spl_autoload_register(function($class) {
+	$path = str_replace('\\', '/', $class.'.php');
+	if (file_exists($path)) {
+		require $path;
+	}
+});
+
+session_start();
+
+$router = new Router;
+$router->run();
