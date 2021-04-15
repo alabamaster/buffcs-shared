@@ -20,8 +20,9 @@
 										<select class="form-control form-control-sm" id="server">
 											<option selected="" disabled="">Фильтр по серверам</option>
 											<?php foreach ($allServers as $row):?>
-											<option value="<?=$row['id']?>"><?=$row['hostname']?></option>
-											<?php endforeach;?>
+                                    <?php $selected = (isset($_GET['server']) && $_GET['server'] == $row['id']) ? 'selected=""' : '' ?>
+                                    <option value="<?=$row['id']?>" <?=$selected?>><?=$row['hostname']?></option>
+                                 <?php endforeach;?>
 										</select>
 									</div>
 								</div>
@@ -94,7 +95,12 @@
 						</tbody>
 					</table>
 				</div>
-				<div class="row align-items-center <?php if($dataTotalRows == 0) echo 'd-none';?>">
+            
+            <?php if($dataTotalRows == 0):?>
+            <p class="text-center pt-4">Нет данных</p>
+            <?php endif;?>
+				
+            <div class="row align-items-center <?php if($dataTotalRows == 0) echo 'd-none';?>">
 					<div class="col-md-9">
 						<?=$paginator?>
 					</div>
@@ -169,7 +175,8 @@
 	});
 
 	clearFilter.addEventListener('click', () => {
-		window.location.href = window.location.origin + '/bans?page=1';
+		// window.location.href = window.location.origin + '/bans?page=1';
+      window.location.href = window.location.origin + window.location.pathname + '?page=1';
 	});
 
 </script>

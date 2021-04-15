@@ -1,5 +1,5 @@
 <?php use app\core\Config;?>
-<nav class="navbar navbar-expand-lg nav-bg navbar-dark fixed-top box p-2 rounded-0" style="box-shadow: none;">
+<nav class="navbar navbar-expand-lg nav-bg navbar-dark fixed-top box p-2 rounded-0" style="box-shadow: none;background-color: #39375d;">
 	<a class="navbar-brand ml-5 mr-5" href="<?=$this->SITE_URL?>"><?=$this->SITE_NAME?></a>
 	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 	<span class="navbar-toggler-icon"></span>
