@@ -18,7 +18,7 @@
 						<div class="col">
 							<div class="form-group">
 								<label><i class="fa fa-envelope-o"></i> Email</label>
-								<input id="email" name="email" type="email" class="form-control form-control-sm" placeholder="На него придут данные" minlength="5" maxlength="30" data-toggle="tooltip" data-placement="top" title="Вводите настоящий Email! Если Вы забудете пароль, он понадобиться" required="">
+								<input id="email" name="email" type="email" class="form-control form-control-sm" placeholder="На него придут данные" minlength="5" maxlength="30" data-toggle="tooltip" data-placement="top" title="Вводите настоящий Email! Если Вы забудете пароль, он понадобится" required="">
 							</div>
 						</div>
 					</div>
