@@ -30,7 +30,7 @@ class MainController extends Controller
 
 		if ( !empty($_POST) ) 
 		{
-			if ( $_POST['type'] == 'ac' ) {
+			if ( isset($_POST['type']) && $_POST['type'] == 'ac' ) {
 				if ( !$SERVERS->checkSteamId($_POST['steamid']) ) {
 					$this->view->message('error', 'Введите валидный SteamID или обратитесь к администрации');
 				}
