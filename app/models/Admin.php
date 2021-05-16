@@ -147,8 +147,8 @@ class Admin extends Model
 
 		$query = DB::run("
 			SELECT * FROM `{$this->DB['prefix']}_amxadmins` 
-			WHERE `username` LIKE ?
-			ORDER BY `id`", [ $username ])->fetchAll();
+			WHERE `username` LIKE ? OR `nickname` LIKE ?
+			ORDER BY `id`", [ $username, $username ])->fetchAll();
 
 		return $arr = (empty($query)) ? false : $query;
 	}
